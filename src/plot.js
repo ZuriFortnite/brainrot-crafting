@@ -49,9 +49,13 @@
   /* ---------------- YouTube Playables SDK ----------------
      Cert names these exactly. No network calls, no Page Visibility API, and we
      MUST NOT ship our own mute button. */
-  const YT = { present: false };
+  /* `raw` - the SDK object is on the page at all.
+     `present` - it has been PROVEN to persist, i.e. we really are on YouTube.
+     Everything user-facing keys off `present`, so the public demo build grants
+     rewards locally and saves locally instead of silently losing both. */
+  const YT = { present: false, raw: false };
 
-  YT.init = () => { YT.present = !!(window.ytgame && window.ytgame.game); };
+  YT.init = () => { YT.raw = !!(window.ytgame && window.ytgame.game); };
   YT.firstFrame = () => {
     if (YT.present) try { window.ytgame.game.firstFrameReady(); } catch (e) {}
   };
@@ -274,20 +278,39 @@
     return dst;
   }
 
+  function localRead() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) adopt(S, JSON.parse(raw));
+    } catch (e) {}
+  }
+
+  /* A ROUND TRIP, not a feature test. The SDK object exists off-YouTube too,
+     where saveData() resolves and loadData() returns "" - so merely finding the
+     object told us nothing and cost the player their progress. */
   function initSave() {
     S = blank();
-    if (!YT.present) {
-      try {
-        const raw = localStorage.getItem(KEY);
-        if (raw) adopt(S, JSON.parse(raw));
-      } catch (e) {}
-      loaded = true;
-      return Promise.resolve(S);
-    }
+    if (!YT.raw) { localRead(); loaded = true; return Promise.resolve(S); }
+
+    const done = () => { loaded = true; return S; };
     return window.ytgame.game.loadData().then(raw => {
-      if (raw) { try { adopt(S, JSON.parse(raw)); } catch (e) {} }
-      loaded = true; return S;
-    }, () => { loaded = true; return S; });
+      if (raw) {                       // it kept something: unambiguously live
+        try { adopt(S, JSON.parse(raw)); } catch (e) {}
+        YT.present = true;
+        return done();
+      }
+      /* Empty means either a new player or a no-op SDK. Probing settles it, and
+         is safe here precisely because empty means there is nothing to lose. */
+      const probe = '{"v":2,"probe":1}';
+      return window.ytgame.game.saveData(probe)
+        .then(() => window.ytgame.game.loadData())
+        .then(back => {
+          YT.present = (back === probe);
+          if (YT.present) return window.ytgame.game.saveData('');
+        })
+        .catch(() => { YT.present = false; })
+        .then(() => { if (!YT.present) localRead(); return done(); });
+    }, () => { YT.present = false; localRead(); return done(); });
   }
 
   function save() {
@@ -1629,7 +1652,6 @@
   /* ---------------- boot ---------------- */
   P.boot = function () {
     YT.init();
-    initAudio();
 
     /* ?reset=1 wipes the save and starts over. Local development only - it is
        one of the debug params that must be stripped before submission. */
@@ -1659,6 +1681,7 @@
         return initSave();
       })
       .then(() => {
+        initAudio();                   // after the probe: it keys off YT.present
         if (!S.unlocked) {
           S.unlocked = D.start.slots;
           S.coins = D.start.coins;
