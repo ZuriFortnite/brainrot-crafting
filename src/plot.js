@@ -285,32 +285,39 @@
     } catch (e) {}
   }
 
-  /* A ROUND TRIP, not a feature test. The SDK object exists off-YouTube too,
-     where saveData() resolves and loadData() returns "" - so merely finding the
-     object told us nothing and cost the player their progress. */
+  /* WHO IS FRAMING US, not what the SDK claims.
+
+     Two checks failed before this one. Testing for the object failed because
+     the SDK exists everywhere the script tag does. Testing a save/load ROUND
+     TRIP failed too, and more insidiously: off-YouTube the SDK keeps data in
+     memory for the session, so the probe read its own sentinel back, declared
+     itself live, and still lost everything on reload.
+
+     The host is the only thing that actually settles it. A Playable always runs
+     framed by youtube.com; a demo build on Pages is top-level. */
+  function inYouTube() {
+    try {
+      const ao = location.ancestorOrigins;
+      if (ao && ao.length) {
+        for (let i = 0; i < ao.length; i++) {
+          if (/(^|\.)youtube\.com$/i.test(new URL(ao[i]).hostname)) return true;
+        }
+        return false;                  // framed, but not by YouTube
+      }
+    } catch (e) {}
+    // no ancestorOrigins (Firefox): fall back to whether we are framed at all,
+    // and treat a cross-origin throw as "framed", which on YouTube is correct
+    try { return window.top !== window.self; } catch (e) { return true; }
+  }
+
   function initSave() {
     S = blank();
-    if (!YT.raw) { localRead(); loaded = true; return Promise.resolve(S); }
-
-    const done = () => { loaded = true; return S; };
+    YT.present = YT.raw && inYouTube();
+    if (!YT.present) { localRead(); loaded = true; return Promise.resolve(S); }
     return window.ytgame.game.loadData().then(raw => {
-      if (raw) {                       // it kept something: unambiguously live
-        try { adopt(S, JSON.parse(raw)); } catch (e) {}
-        YT.present = true;
-        return done();
-      }
-      /* Empty means either a new player or a no-op SDK. Probing settles it, and
-         is safe here precisely because empty means there is nothing to lose. */
-      const probe = '{"v":2,"probe":1}';
-      return window.ytgame.game.saveData(probe)
-        .then(() => window.ytgame.game.loadData())
-        .then(back => {
-          YT.present = (back === probe);
-          if (YT.present) return window.ytgame.game.saveData('');
-        })
-        .catch(() => { YT.present = false; })
-        .then(() => { if (!YT.present) localRead(); return done(); });
-    }, () => { YT.present = false; localRead(); return done(); });
+      if (raw) { try { adopt(S, JSON.parse(raw)); } catch (e) {} }
+      loaded = true; return S;
+    }, () => { loaded = true; return S; });
   }
 
   function save() {
