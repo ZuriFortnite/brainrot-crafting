@@ -643,6 +643,19 @@
     .pc{height:92px}
     #nav{gap:7px}
   }
+  /* SHORT AND WIDE (32:9 is 1280x360). Stacked vertically the crafting table
+     alone consumed the entire 360px and pushed the ingredient palette to ten
+     pixels tall, below the nav bar - the game was genuinely unplayable at that
+     ratio because you could not buy anything. Side by side, both fit. */
+  @media (max-height:470px) and (min-width:620px){
+    #viewCraft{flex-direction:row;gap:14px;align-items:stretch}
+    #craftLeft{flex:none;display:flex;flex-direction:column;justify-content:center}
+    #table{padding:0 0 8px}
+    #forges{padding:0}
+    #palWrap{flex:1;min-width:0}
+    #pal{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}
+  }
+
   /* 32:9 is ~1280x360: the bars must not eat the whole board */
   @media (max-height:470px){
     :root{--btn:50px;--cell:44px}
@@ -684,12 +697,14 @@
 </div>
 
 <div id="viewCraft" class="view">
-  <div id="table">
-    <div id="g3"></div>
-    <img id="arrow" src="assets/icon/chev.png" alt="">
-    <div id="res"><span class="q">?</span></div>
+  <div id="craftLeft">
+    <div id="table">
+      <div id="g3"></div>
+      <img id="arrow" src="assets/icon/chev.png" alt="">
+      <div id="res"><span class="q">?</span></div>
+    </div>
+    <div id="forges"></div>
   </div>
-  <div id="forges"></div>
   <div id="palWrap">
     <div id="pal"></div>
     <div id="palUp" class="palArrow"><img src="assets/icon/up.png" alt=""></div>
@@ -794,7 +809,7 @@
   </div>
 </div>
 
-<script src="src/plot.js?v=p36"></script>
+<script src="src/plot.js?v=p37"></script>
 <script>PLOT.boot();</script>
 </body>
 </html>
