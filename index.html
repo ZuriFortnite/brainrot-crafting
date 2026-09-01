@@ -70,9 +70,7 @@
   /* Hover is gated behind a real pointer: on touch, :hover sticks after a tap
      and leaves elements looking permanently pressed. */
   @media (hover:hover){
-    .btn:not(.dim):hover{filter:brightness(1.08)}
-    .btn:not(.dim):hover:not(:active):not(.on){transform:translateY(-2px);
-      box-shadow:0 10px 0 var(--line),0 15px 20px rgba(75,42,20,.32)}
+    .btn:not(.dim):hover{filter:brightness(1.1)}
   }
 
   .badge{position:absolute;top:-12px;right:-12px;min-width:32px;height:32px;
@@ -150,7 +148,7 @@
   .slot.locked .px{font-size:14px;color:#fff;
     -webkit-text-stroke:5px var(--line);paint-order:stroke fill}
   @media (hover:hover){
-    .slot.locked:hover{background:rgba(75,42,20,.1);transform:scale(1.04)}
+    .slot.locked:hover{background:rgba(75,42,20,.1)}
   }
   /* live drop feedback */
   .slot.drop{background:rgba(255,255,255,.42);border:4px solid #fff;
@@ -352,8 +350,8 @@
     transition:transform .07s,box-shadow .07s,filter .12s}
   .pc:active{transform:translateY(4px);box-shadow:0 0 0 var(--line)}
   @media (hover:hover){
-    .pc:not(.locked):hover{transform:translateY(-3px);
-      box-shadow:0 7px 0 var(--line);filter:brightness(1.03)}
+    .pc:not(.locked):hover{filter:brightness(1.06);
+      box-shadow:0 4px 0 var(--line),0 0 0 3px rgba(246,195,51,.45)}
   }
   .pc img{width:78%;height:62%;object-fit:contain;pointer-events:none}
   .pc img.art{width:auto;height:70%;
@@ -474,8 +472,8 @@
     align-items:center;justify-content:center;gap:4px}
   .dcell .act img{width:17px;height:17px;object-fit:contain;filter:none}
   .dcell.lock img{filter:brightness(0) opacity(.3)}
-  @media (hover:hover){.dcell:hover{transform:translateY(-3px);
-    box-shadow:0 8px 0 var(--line)}}
+  @media (hover:hover){.dcell:hover{filter:brightness(1.05);
+    box-shadow:0 5px 0 var(--line),0 0 0 3px rgba(246,195,51,.45)}}
 
   /* ---------------- workshop: tasks and upgrades ---------------- */
   .sec{display:flex;align-items:center;gap:10px;font-size:14px;letter-spacing:3px;
@@ -809,7 +807,7 @@
   </div>
 </div>
 
-<script src="src/plot.js?v=p37"></script>
+<script src="src/plot.js?v=p38"></script>
 <script>PLOT.boot();</script>
 </body>
 </html>
