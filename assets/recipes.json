@@ -1,0 +1,777 @@
+{
+ "items": [
+  {
+   "id": 0,
+   "kind": "ing",
+   "name": "Ninja",
+   "emoji": "🥷"
+  },
+  {
+   "id": 1,
+   "kind": "ing",
+   "name": "Cup",
+   "emoji": "☕"
+  },
+  {
+   "id": 2,
+   "kind": "ing",
+   "name": "Fish",
+   "emoji": "🐟"
+  },
+  {
+   "id": 3,
+   "kind": "ing",
+   "name": "Cat",
+   "emoji": "🐱"
+  },
+  {
+   "id": 4,
+   "kind": "ing",
+   "name": "Tire",
+   "emoji": "🛞"
+  },
+  {
+   "id": 5,
+   "kind": "ing",
+   "name": "Frog",
+   "emoji": "🐸"
+  },
+  {
+   "id": 6,
+   "kind": "ing",
+   "name": "Banana",
+   "emoji": "🍌"
+  },
+  {
+   "id": 7,
+   "kind": "ing",
+   "name": "Monkey",
+   "emoji": "🐒"
+  },
+  {
+   "id": 8,
+   "kind": "ing",
+   "name": "Fridge",
+   "emoji": "🧊"
+  },
+  {
+   "id": 9,
+   "kind": "ing",
+   "name": "Camel",
+   "emoji": "🐪"
+  },
+  {
+   "id": 10,
+   "kind": "ing",
+   "name": "Saturn",
+   "emoji": "🪐"
+  },
+  {
+   "id": 11,
+   "kind": "ing",
+   "name": "Cow",
+   "emoji": "🐄"
+  },
+  {
+   "id": 12,
+   "kind": "ing",
+   "name": "Sneaker",
+   "emoji": "👟"
+  },
+  {
+   "id": 13,
+   "kind": "ing",
+   "name": "Shark",
+   "emoji": "🦈"
+  },
+  {
+   "id": 14,
+   "kind": "ing",
+   "name": "Cactus",
+   "emoji": "🌵"
+  },
+  {
+   "id": 15,
+   "kind": "ing",
+   "name": "Elephant",
+   "emoji": "🐘"
+  },
+  {
+   "id": 16,
+   "kind": "ing",
+   "name": "Croc",
+   "emoji": "🐊"
+  },
+  {
+   "id": 17,
+   "kind": "ing",
+   "name": "Plane",
+   "emoji": "✈️"
+  },
+  {
+   "id": 18,
+   "kind": "ing",
+   "name": "Bird",
+   "emoji": "🐦"
+  },
+  {
+   "id": 19,
+   "kind": "ing",
+   "name": "Teapot",
+   "emoji": "🫖"
+  },
+  {
+   "id": 20,
+   "kind": "ing",
+   "name": "Bot",
+   "emoji": "🤖"
+  },
+  {
+   "id": 21,
+   "kind": "ing",
+   "name": "Berry",
+   "emoji": "🫐"
+  },
+  {
+   "id": 22,
+   "kind": "ing",
+   "name": "Straw",
+   "emoji": "🥤"
+  },
+  {
+   "id": 23,
+   "kind": "ing",
+   "name": "Bench",
+   "emoji": "🪑"
+  },
+  {
+   "id": 24,
+   "kind": "ing",
+   "name": "Horse",
+   "emoji": "🐴"
+  },
+  {
+   "id": 25,
+   "kind": "ing",
+   "name": "Leaf",
+   "emoji": "🍃"
+  },
+  {
+   "id": 26,
+   "kind": "ing",
+   "name": "Ballerina",
+   "emoji": "🩰"
+  },
+  {
+   "id": 27,
+   "kind": "ing",
+   "name": "Camera",
+   "emoji": "📷"
+  },
+  {
+   "id": 28,
+   "kind": "ing",
+   "name": "Earth",
+   "emoji": "🌍"
+  },
+  {
+   "id": 29,
+   "kind": "ing",
+   "name": "Melon",
+   "emoji": "🍉"
+  },
+  {
+   "id": 30,
+   "kind": "ing",
+   "name": "Bomb",
+   "emoji": "💣"
+  },
+  {
+   "id": 31,
+   "kind": "ing",
+   "name": "Pig",
+   "emoji": "🐷"
+  },
+  {
+   "id": 32,
+   "kind": "ing",
+   "name": "Penguin",
+   "emoji": "🐧"
+  },
+  {
+   "id": 33,
+   "kind": "ing",
+   "name": "Coat",
+   "emoji": "🧥"
+  },
+  {
+   "id": 34,
+   "kind": "ing",
+   "name": "Spy",
+   "emoji": "🕵️"
+  },
+  {
+   "id": 35,
+   "kind": "ing",
+   "name": "Bear",
+   "emoji": "🐻"
+  },
+  {
+   "id": 36,
+   "kind": "ing",
+   "name": "Orange",
+   "emoji": "🍊"
+  },
+  {
+   "id": 37,
+   "kind": "ing",
+   "name": "Muscle",
+   "emoji": "💪"
+  },
+  {
+   "id": 38,
+   "kind": "ing",
+   "name": "King",
+   "emoji": "👑"
+  },
+  {
+   "id": 39,
+   "kind": "ing",
+   "name": "Lady",
+   "emoji": "👗"
+  },
+  {
+   "id": 40,
+   "kind": "ing",
+   "name": "Jelly",
+   "emoji": "🍮"
+  },
+  {
+   "id": 41,
+   "kind": "ing",
+   "name": "Octopus",
+   "emoji": "🐙"
+  },
+  {
+   "id": 42,
+   "kind": "ing",
+   "name": "Ice",
+   "emoji": "❄️"
+  },
+  {
+   "id": 43,
+   "kind": "ing",
+   "name": "Tourist",
+   "emoji": "🧳"
+  },
+  {
+   "id": 44,
+   "kind": "ing",
+   "name": "Water",
+   "emoji": "💧"
+  },
+  {
+   "id": 45,
+   "kind": "ing",
+   "name": "Rodent",
+   "emoji": "🐹"
+  },
+  {
+   "id": 46,
+   "kind": "ing",
+   "name": "Sea",
+   "emoji": "🌊"
+  },
+  {
+   "id": 47,
+   "kind": "ing",
+   "name": "Gold",
+   "emoji": "🥇"
+  },
+  {
+   "id": 48,
+   "kind": "ing",
+   "name": "Crow",
+   "emoji": "🐦‍⬛"
+  },
+  {
+   "id": 49,
+   "kind": "ing",
+   "name": "Blue",
+   "emoji": "💙"
+  },
+  {
+   "id": 50,
+   "kind": "ing",
+   "name": "Belly",
+   "emoji": "🫃"
+  },
+  {
+   "id": 51,
+   "kind": "ing",
+   "name": "Boss",
+   "emoji": "😎"
+  },
+  {
+   "id": 52,
+   "kind": "ing",
+   "name": "Goldfish",
+   "emoji": "🐟"
+  },
+  {
+   "id": 53,
+   "kind": "br",
+   "name": "Ninja Cup",
+   "set": "set0",
+   "tier": 0
+  },
+  {
+   "id": 54,
+   "kind": "br",
+   "name": "Goldfish Cat",
+   "set": "set0",
+   "tier": 1
+  },
+  {
+   "id": 55,
+   "kind": "br",
+   "name": "Tire Frog",
+   "set": "set0",
+   "tier": 2
+  },
+  {
+   "id": 56,
+   "kind": "br",
+   "name": "Banana Monkey",
+   "set": "set0",
+   "tier": 3
+  },
+  {
+   "id": 57,
+   "kind": "br",
+   "name": "Capybara",
+   "set": "set0",
+   "tier": 4
+  },
+  {
+   "id": 58,
+   "kind": "br",
+   "name": "Fridge Camel",
+   "set": "set0",
+   "tier": 5
+  },
+  {
+   "id": 59,
+   "kind": "br",
+   "name": "Saturn Cow",
+   "set": "set0",
+   "tier": 6
+  },
+  {
+   "id": 60,
+   "kind": "br",
+   "name": "Sneaker Shark",
+   "set": "set0",
+   "tier": 7
+  },
+  {
+   "id": 61,
+   "kind": "br",
+   "name": "Cactus Elephant",
+   "set": "set0",
+   "tier": 8
+  },
+  {
+   "id": 62,
+   "kind": "br",
+   "name": "Croco Plane",
+   "set": "set0",
+   "tier": 9
+  },
+  {
+   "id": 63,
+   "kind": "br",
+   "name": "Mega Stack",
+   "set": "set0",
+   "tier": 10
+  },
+  {
+   "id": 64,
+   "kind": "br",
+   "name": "Seagull",
+   "set": "set1",
+   "tier": 0
+  },
+  {
+   "id": 65,
+   "kind": "br",
+   "name": "Fish Cat",
+   "set": "set1",
+   "tier": 1
+  },
+  {
+   "id": 66,
+   "kind": "br",
+   "name": "Crow Lady",
+   "set": "set1",
+   "tier": 2
+  },
+  {
+   "id": 67,
+   "kind": "br",
+   "name": "Teapot Bot",
+   "set": "set1",
+   "tier": 3
+  },
+  {
+   "id": 68,
+   "kind": "br",
+   "name": "Cactus Berry",
+   "set": "set1",
+   "tier": 4
+  },
+  {
+   "id": 69,
+   "kind": "br",
+   "name": "Straw Frog",
+   "set": "set1",
+   "tier": 5
+  },
+  {
+   "id": 70,
+   "kind": "br",
+   "name": "Belly Fish",
+   "set": "set1",
+   "tier": 6
+  },
+  {
+   "id": 71,
+   "kind": "br",
+   "name": "Horse Bench",
+   "set": "set1",
+   "tier": 7
+  },
+  {
+   "id": 72,
+   "kind": "br",
+   "name": "Leaf Croc",
+   "set": "set1",
+   "tier": 8
+  },
+  {
+   "id": 73,
+   "kind": "br",
+   "name": "Mammoth",
+   "set": "set1",
+   "tier": 9
+  },
+  {
+   "id": 74,
+   "kind": "br",
+   "name": "Bird King",
+   "set": "set1",
+   "tier": 10
+  },
+  {
+   "id": 75,
+   "kind": "br",
+   "name": "Blue Octo",
+   "set": "set2",
+   "tier": 0
+  },
+  {
+   "id": 76,
+   "kind": "br",
+   "name": "Cool Penguin",
+   "set": "set2",
+   "tier": 1
+  },
+  {
+   "id": 77,
+   "kind": "br",
+   "name": "Ballerina Cup",
+   "set": "set2",
+   "tier": 2
+  },
+  {
+   "id": 78,
+   "kind": "br",
+   "name": "Camera Blob",
+   "set": "set2",
+   "tier": 3
+  },
+  {
+   "id": 79,
+   "kind": "br",
+   "name": "Coat Capy",
+   "set": "set2",
+   "tier": 4
+  },
+  {
+   "id": 80,
+   "kind": "br",
+   "name": "Earth Cow",
+   "set": "set2",
+   "tier": 5
+  },
+  {
+   "id": 81,
+   "kind": "br",
+   "name": "Melon Croc",
+   "set": "set2",
+   "tier": 6
+  },
+  {
+   "id": 82,
+   "kind": "br",
+   "name": "Spy Bear",
+   "set": "set2",
+   "tier": 7
+  },
+  {
+   "id": 83,
+   "kind": "br",
+   "name": "Swole Orange",
+   "set": "set2",
+   "tier": 8
+  },
+  {
+   "id": 84,
+   "kind": "br",
+   "name": "Bomb Pig",
+   "set": "set2",
+   "tier": 9
+  },
+  {
+   "id": 85,
+   "kind": "br",
+   "name": "Tourist Boss",
+   "set": "set2",
+   "tier": 10
+  }
+ ],
+ "ingredients": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  47,
+  48,
+  49,
+  50,
+  51,
+  52
+ ],
+ "recipes": {
+  "0+1": 53,
+  "3+52": 54,
+  "4+5": 55,
+  "6+7": 56,
+  "44+45": 57,
+  "8+9": 58,
+  "10+11": 59,
+  "12+13": 60,
+  "14+15": 61,
+  "16+17": 62,
+  "57+73": 63,
+  "18+46": 64,
+  "2+3": 65,
+  "39+48": 66,
+  "19+20": 67,
+  "14+21": 68,
+  "5+22": 69,
+  "2+50": 70,
+  "23+24": 71,
+  "16+25": 72,
+  "15+42": 73,
+  "18+38": 74,
+  "41+49": 75,
+  "32+42": 76,
+  "1+26": 77,
+  "27+40": 78,
+  "33+57": 79,
+  "11+28": 80,
+  "16+29": 81,
+  "34+35": 82,
+  "36+37": 83,
+  "30+31": 84,
+  "43+51": 85
+ },
+ "madeBy": {
+  "53": [
+   0,
+   1
+  ],
+  "54": [
+   3,
+   52
+  ],
+  "55": [
+   4,
+   5
+  ],
+  "56": [
+   6,
+   7
+  ],
+  "57": [
+   44,
+   45
+  ],
+  "58": [
+   8,
+   9
+  ],
+  "59": [
+   10,
+   11
+  ],
+  "60": [
+   12,
+   13
+  ],
+  "61": [
+   14,
+   15
+  ],
+  "62": [
+   16,
+   17
+  ],
+  "63": [
+   57,
+   73
+  ],
+  "64": [
+   18,
+   46
+  ],
+  "65": [
+   2,
+   3
+  ],
+  "66": [
+   39,
+   48
+  ],
+  "67": [
+   19,
+   20
+  ],
+  "68": [
+   14,
+   21
+  ],
+  "69": [
+   5,
+   22
+  ],
+  "70": [
+   2,
+   50
+  ],
+  "71": [
+   23,
+   24
+  ],
+  "72": [
+   16,
+   25
+  ],
+  "73": [
+   15,
+   42
+  ],
+  "74": [
+   18,
+   38
+  ],
+  "75": [
+   41,
+   49
+  ],
+  "76": [
+   32,
+   42
+  ],
+  "77": [
+   1,
+   26
+  ],
+  "78": [
+   27,
+   40
+  ],
+  "79": [
+   33,
+   57
+  ],
+  "80": [
+   11,
+   28
+  ],
+  "81": [
+   16,
+   29
+  ],
+  "82": [
+   34,
+   35
+  ],
+  "83": [
+   36,
+   37
+  ],
+  "84": [
+   30,
+   31
+  ],
+  "85": [
+   43,
+   51
+  ]
+ }
+}

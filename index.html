@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Brainrot Crafting</title>
+<style>
+  /* Fredoka One (SIL OFL), bundled locally - Playables forbids network calls,
+     so a Google Fonts <link> would fail cert. Single weight, declared 400-900
+     so every weight we ask for maps onto this face instead of a faux-bold. */
+  @font-face{font-family:"Fredoka One";font-style:normal;font-weight:400 900;
+    font-display:block;src:url(assets/font/fredokaone.woff2) format("woff2")}
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  /* Form controls do NOT inherit font-family - that is why the count on the
+     collection badge rendered in the browser default while everything around it
+     was Fredoka. Any text inside a <button> hit the same bug. */
+  button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+  html,body{width:100%;height:100%;overflow:hidden;user-select:none;
+    -webkit-user-select:none;touch-action:none;
+    font-family:"Fredoka One",Verdana,"Trebuchet MS",sans-serif;
+    background:#f7c9a3;color:#4b2a14}
+
+  :root{
+    --peach:#f7c9a3; --peachTop:#fbdcc0; --peachBot:#f0b183;
+    --card:#fff3e6; --cardEdge:#dcb894;
+    --ink:#4b2a14; --inkSoft:#8a5d3c;
+    /* ONE outline colour for the whole toon look - every button, card, panel
+       and frame traces with this, so nothing reads as flat. */
+    --line:#4b2a14; --lineW:4px;
+    --grass:#79c74e;
+    --btn:72px; --cell:58px;
+  }
+
+  /* Every themed surface reads these, so an event is one variable assignment
+     rather than a repaint scattered across a dozen rules. */
+  #bg{position:absolute;inset:0;transition:background .8s;
+    background:linear-gradient(180deg,var(--peachTop) 0%,var(--peach) 55%,var(--peachBot) 100%)}
+  #bg:after{content:"";position:absolute;inset:0;opacity:.35;
+    background-image:radial-gradient(rgba(255,255,255,.75) 2px,transparent 2px);
+    background-size:34px 34px}
+
+  /* ---------------- chunky buttons ---------------- */
+  .btn{position:relative;display:flex;align-items:center;justify-content:center;
+    border:var(--lineW) solid var(--line);border-radius:26%;
+    pointer-events:auto;cursor:pointer;background:var(--c1);
+    box-shadow:0 8px 0 var(--line),0 12px 16px rgba(75,42,20,.3);
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  .btn:active,.btn.on{transform:translateY(7px);
+    box-shadow:0 1px 0 var(--line),0 2px 6px rgba(75,42,20,.3)}
+  /* an inner highlight band: the glossy toy read, not a flat swatch */
+  .btn:before{content:"";position:absolute;left:12%;right:12%;top:9%;height:26%;
+    border-radius:999px;background:rgba(255,255,255,.34);pointer-events:none}
+  .btn img{width:62%;height:62%;object-fit:contain;position:relative;
+    pointer-events:none;filter:drop-shadow(0 3px 0 rgba(75,42,20,.32))}
+  .btn.orange{--c1:#f2913c}
+  .btn.grey  {--c1:#c3b3a6}
+  .btn.blue  {--c1:#4fa6e8}
+  .btn.green {--c1:#63c257}
+  .btn.purple{--c1:#b567e0}
+  .btn.gold  {--c1:#f6c333}
+  .btn.dim{filter:grayscale(.65) brightness(.9);cursor:default}
+
+  /* Hover is gated behind a real pointer: on touch, :hover sticks after a tap
+     and leaves elements looking permanently pressed. */
+  @media (hover:hover){
+    .btn:not(.dim):hover{filter:brightness(1.08)}
+    .btn:not(.dim):hover:not(:active):not(.on){transform:translateY(-2px);
+      box-shadow:0 10px 0 var(--line),0 15px 20px rgba(75,42,20,.32)}
+  }
+
+  .badge{position:absolute;top:-12px;right:-12px;min-width:32px;height:32px;
+    padding:0 8px;border-radius:16px;display:flex;align-items:center;
+    justify-content:center;font-size:16px;color:#fff;z-index:2;
+    background:#e8483f;border:4px solid var(--line);
+    box-shadow:0 3px 0 rgba(75,42,20,.35)}
+  .badge.hidden{display:none}
+  .badge.go{background:#63c257;animation:nudge 1.1s ease-in-out infinite}
+  /* the forge countdown, carried on the nav button so it is visible from the
+     plot - the craft finishes whether you are watching it or not */
+  .badge.time{background:#f2913c;font-size:14px;animation:none}
+  @keyframes nudge{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
+
+  /* ---------------- top bar ---------------- */
+  #top{position:absolute;left:0;right:0;top:0;z-index:30;
+    padding:calc(10px + env(safe-area-inset-top)) 12px 0;
+    display:flex;flex-direction:column;align-items:center;pointer-events:none}
+  #purse{display:flex;align-items:center;gap:9px;
+    background:var(--card);border:var(--lineW) solid var(--line);
+    border-radius:999px;padding:5px 20px 5px 8px;
+    box-shadow:0 7px 0 var(--line);transition:transform .1s}
+  #purse.bump{transform:scale(1.09)}
+  #purse img{width:40px;height:40px;object-fit:contain}
+  #coins{font-size:34px;color:#4b2a14}
+  #sub{margin-top:9px;display:flex;gap:12px;align-items:center}
+  #rate,#act{font-size:17px;color:#fff;letter-spacing:1px;
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
+  #act{color:#e5b6ff}
+
+  /* The event banner. Live while one runs, a countdown to the next when not -
+     "come back at half past" is a better reason to return than "come back". */
+  #evt{margin-top:8px;display:flex;align-items:center;gap:9px;
+    background:rgba(40,20,8,.8);border:4px solid var(--line);border-radius:16px;
+    padding:4px 14px;font-size:14px;pointer-events:none;opacity:.85}
+  #evt.live{background:linear-gradient(180deg,var(--evA,#ffe07a),var(--evB,#e0a017));
+    opacity:1;animation:hotcard 1.4s ease-in-out infinite}
+  #evtName{color:#fff;-webkit-text-stroke:5px var(--line);paint-order:stroke fill}
+  #evt.live #evtName{color:#fff}
+  #evtTime{color:#ffdc5e;-webkit-text-stroke:5px var(--line);paint-order:stroke fill}
+  #evt.live #evtTime{color:#fff}
+
+  /* ---------------- views ---------------- */
+  .view{position:absolute;left:0;right:0;
+    top:calc(var(--topH,112px) + 10px);
+    bottom:calc(env(safe-area-inset-bottom) + var(--btn) + 34px);
+    display:none;flex-direction:column;padding:0 12px}
+  .view.on{display:flex}
+
+  /* ---------------- the plot ---------------- */
+  #plot{flex:1;min-height:0;border:5px solid var(--line);border-radius:24px;
+    overflow:hidden;box-shadow:0 8px 0 var(--line);transition:background-color .8s;
+    background-color:var(--grass);
+    background-image:
+      linear-gradient(45deg,rgba(0,0,0,.06) 25%,transparent 25%,transparent 75%,rgba(0,0,0,.06) 75%),
+      linear-gradient(45deg,rgba(0,0,0,.06) 25%,transparent 25%,transparent 75%,rgba(0,0,0,.06) 75%);
+    background-size:36px 36px,36px 36px;
+    background-position:0 0,18px 18px}
+  /* pan-y here, none on the creatures: a drag that starts on a creature is
+     ours, a drag that starts on the grass scrolls the plot. */
+  /* Columns and cell size are solved in fitPlot(): CSS alone can only pick
+     columns from width, which strands square cells in a tall box. */
+  #slots{height:100%;overflow-y:auto;overscroll-behavior:contain;
+    touch-action:pan-y;display:grid;padding:12px;
+    justify-content:center;align-content:safe center;scrollbar-width:none}
+  #slots::-webkit-scrollbar{display:none}
+
+  .slot{position:relative;aspect-ratio:1/1;border-radius:18px;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .12s,border-color .12s,transform .12s}
+  .slot.empty{border:4px dashed rgba(255,255,255,.55);background:rgba(255,255,255,.12)}
+  .slot.locked{border:4px solid rgba(75,42,20,.4);background:rgba(75,42,20,.2);
+    cursor:pointer;flex-direction:column;gap:3px}
+  .slot.locked img{width:32%;opacity:.8}
+  .slot.locked .px{font-size:14px;color:#fff;
+    -webkit-text-stroke:5px var(--line);paint-order:stroke fill}
+  @media (hover:hover){
+    .slot.locked:hover{background:rgba(75,42,20,.1);transform:scale(1.04)}
+  }
+  /* live drop feedback */
+  .slot.drop{background:rgba(255,255,255,.42);border:4px solid #fff;
+    transform:scale(1.06)}
+  .slot.dropMerge{background:rgba(255,214,94,.55);border:4px solid #ffd45e}
+
+  .mob{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding-bottom:6px;
+    cursor:grab;touch-action:none;transition:transform .09s}
+  .mob img{width:100%;height:88%;object-fit:contain;pointer-events:none;
+    filter:drop-shadow(0 6px 5px rgba(30,60,20,.42));transition:transform .09s}
+  .mob .lv{position:absolute;top:1px;left:1px;font-size:12px;color:#fff;
+    background:#f2913c;border:3px solid var(--line);border-radius:9px;
+    padding:0 5px;box-shadow:0 3px 0 var(--line);pointer-events:none}
+  .mob.mut .lv{background:#b567e0}
+  /* GOLD: one craft in twenty, triple income forever. It has to be obvious at a
+     glance across a full plot, so it gets a tint, a glow and its own badge. */
+  /* An event mutation is PERMANENT, so it gets a permanent mark - the tint
+     comes from the event that made it, set inline. */
+  .mob.ev .lv{background:var(--evA,#b567e0);color:#fff}
+  .mob.ev:before{content:"";position:absolute;inset:-5px;border-radius:19px;
+    border:3px solid var(--evA,#b567e0);pointer-events:none;
+    animation:hotcard 1.9s ease-in-out infinite}
+  .mob.gold .lv{background:#f6c333;color:#4b2a14}
+  .mob.gold img{filter:sepia(.7) saturate(2.4) hue-rotate(-14deg) brightness(1.12)
+    drop-shadow(0 0 7px rgba(246,195,51,.85))
+    drop-shadow(0 6px 5px rgba(30,60,20,.42))}
+  .mob.gold:after{content:"";position:absolute;inset:-4px;border-radius:18px;
+    border:3px solid rgba(246,195,51,.75);pointer-events:none;
+    animation:hotcard 1.6s ease-in-out infinite}
+  /* the coin meter: fills as its next tap bonus recharges */
+  .mob .rc{position:absolute;left:18%;right:18%;bottom:2px;height:7px;
+    border-radius:4px;background:rgba(75,42,20,.42);overflow:hidden;
+    border:2px solid rgba(75,42,20,.55);transition:opacity .2s;
+    pointer-events:none}
+  .mob .rc i{display:block;height:100%;width:0;background:#ffd45e;
+    border-radius:3px}
+  /* the bar is only meaningful while it is filling - a full one left on screen
+     reads as a stray underline under the art */
+  .mob.ready .rc{opacity:0}
+  .mob.ready img{animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @media (hover:hover){ .mob:hover img{transform:scale(1.1)} }
+  .mob.tap{transform:scale(.86)}
+  .mob.ghost{opacity:.28}
+  #dragLayer{position:fixed;left:0;top:0;pointer-events:none;z-index:70;
+    display:none;align-items:flex-end;justify-content:center}
+  #dragLayer.on{display:flex}
+  #dragLayer img{width:100%;height:78%;object-fit:contain;
+    filter:drop-shadow(0 12px 10px rgba(30,60,20,.5))}
+
+  @keyframes plop{0%{transform:scale(.2) translateY(-40px)}
+    60%{transform:scale(1.16)}100%{transform:scale(1)}}
+  .mob.fresh{animation:plop .45s cubic-bezier(.2,1.4,.4,1)}
+
+  #plot{position:relative}
+  #plotFoot{flex:none;display:flex;justify-content:center;align-items:center;
+    gap:14px;padding-top:10px;flex-wrap:wrap}
+  #buySlot{display:flex;align-items:center;gap:6px;font-size:17px;color:#fff;
+    background:linear-gradient(180deg,#8ede6d,#4fae3c);
+    border:var(--lineW) solid var(--line);border-radius:16px;
+    padding:9px 14px;box-shadow:0 6px 0 var(--line);cursor:pointer;
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  #buySlot:active{transform:translateY(5px);box-shadow:0 1px 0 var(--line)}
+  #buySlot img{width:26px;height:26px}
+  #buySlot.dim{filter:grayscale(.65) brightness(.92)}
+  @media (hover:hover){#buySlot:not(.dim):hover{filter:brightness(1.08)}}
+
+  /* ---------------- the crafting table ---------------- */
+  #table{flex:none;display:flex;align-items:center;justify-content:center;
+    gap:14px;padding:2px 0 10px}
+  #g3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
+    background:#c9a077;border:5px solid var(--line);border-radius:20px;padding:8px;
+    box-shadow:0 8px 0 var(--line)}
+  .gc{width:var(--cell);height:var(--cell);border-radius:12px;
+    background:#8d6647;border:3px solid rgba(75,42,20,.55);
+    display:flex;align-items:center;justify-content:center;
+    font-size:calc(var(--cell) * .56);line-height:1;cursor:pointer;
+    box-shadow:inset 0 3px 0 rgba(0,0,0,.18);transition:background .12s,transform .08s}
+  .gc img{width:90%;height:90%;object-fit:contain;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+  .gc.full{background:#a97c56}
+  .gc.pop{animation:cellpop .28s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes cellpop{0%{transform:scale(.3)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+  @media (hover:hover){.gc.full:hover{background:#c08f63;transform:scale(1.06)}}
+
+  /* pack icon, not a text glyph: the character arrows rendered in whatever
+     system font was around and never matched the rest of the art */
+  #arrow{width:34px;height:34px;flex:none;object-fit:contain;
+    filter:drop-shadow(0 3px 0 rgba(75,42,20,.3))}
+  #res{width:calc(var(--cell) * 1.7);height:calc(var(--cell) * 1.7);
+    border-radius:18px;background:#8d6647;border:5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 0 var(--line);cursor:default}
+  #res img{width:88%;height:88%;object-fit:contain}
+  #res.ready{background:#63c257;cursor:pointer;animation:ready 1s ease-in-out infinite}
+  @keyframes ready{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  #res .q{font-size:calc(var(--cell) * .8);color:rgba(255,255,255,.42)}
+  @media (hover:hover){#res.ready:hover{filter:brightness(1.1)}}
+  /* ---------------- the forges ----------------
+     One tile per table. Each carries its own art, wipe, countdown and skip, so
+     a skip is never ambiguous about which job it applies to. */
+  #forges{flex:none;display:flex;justify-content:center;flex-wrap:wrap;gap:12px;
+    padding:0 0 12px}
+  .forge{position:relative;width:56px;height:56px;border-radius:16px;
+    background:#8d6647;border:4px solid var(--line);
+    box-shadow:0 5px 0 var(--line);display:flex;align-items:center;
+    justify-content:center;overflow:visible}
+  .forge.free{background:rgba(141,102,71,.35);border-style:dashed}
+  .forge.lock{background:rgba(75,42,20,.3);flex-direction:column;gap:1px}
+  .forge.lock img{width:42%;opacity:.95}
+  .forge.lock span{font-size:13px;color:#fff;-webkit-text-stroke:5px var(--line);
+    paint-order:stroke fill}
+  .forge.busy{cursor:pointer}
+  .forge > img{width:88%;height:88%;object-fit:contain;opacity:.4}
+  .forge .fill{position:absolute;inset:-2px;border-radius:12px;
+    pointer-events:none;
+    background:conic-gradient(rgba(255,212,94,.6) var(--p,0deg),transparent 0deg)}
+  .forge .t{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+    text-align:center;font-size:16px;color:#fff;
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill;
+    pointer-events:none}
+  .forge .tv{position:absolute;right:-11px;bottom:-11px;width:30px;height:30px;
+    border-radius:11px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#ffe07a,#e0a017);
+    border:3px solid var(--line);box-shadow:0 3px 0 var(--line);
+    animation:hotcard 1.2s ease-in-out infinite;pointer-events:none}
+  .forge .tv img{width:74%;height:74%;object-fit:contain}
+
+  /* Watch-an-ad buttons. Always optional, never in the way of playing, and
+     visually distinct from every other control so you can tell at a glance that
+     a button costs you a video. */
+  .adBtn{position:relative;display:inline-flex;align-items:center;
+    justify-content:center;gap:9px;color:#3a2408;font-size:15px;
+    background:linear-gradient(180deg,#ffe07a 0%,#f6c333 46%,#e0a017 100%);
+    border:4px solid var(--line);border-radius:16px;padding:6px 15px 6px 7px;
+    box-shadow:0 6px 0 var(--line),0 9px 12px rgba(75,42,20,.3);
+    cursor:pointer;overflow:hidden;
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  .adBtn:active{transform:translateY(5px);
+    box-shadow:0 1px 0 var(--line),0 2px 5px rgba(75,42,20,.3)}
+  @media (hover:hover){.adBtn:hover{filter:brightness(1.07)}}
+  /* the icon rides in its own dark chip, so it reads as a badge not a glyph */
+  .adBtn img{width:28px;height:28px;object-fit:contain;padding:3px;
+    border-radius:10px;background:rgba(75,42,20,.9);flex:none}
+  /* a shine sweeping across: the reward-button idiom */
+  .adBtn:after{content:"";position:absolute;top:-60%;bottom:-60%;width:34px;
+    left:-60px;background:rgba(255,255,255,.5);transform:skewX(-22deg);
+    animation:shine 3.2s ease-in-out infinite;pointer-events:none}
+  @keyframes shine{0%,62%{left:-60px}86%,100%{left:130%}}
+
+  /* The reward buttons on the plot are SQUARE: the reward itself is the icon
+     (green cash, a new slot) and a small TV chip in the corner says it costs a
+     video. A wide gold pill said "ad" but never said what you were getting. */
+  .adCol{display:flex;flex-direction:column;align-items:center;gap:5px;
+    cursor:pointer;-webkit-text-stroke:0}
+  .adSq{position:relative;width:58px;height:58px;border-radius:18px;
+    display:flex;align-items:center;justify-content:center;overflow:visible;
+    border:4px solid var(--line);background:var(--c1);
+    box-shadow:0 6px 0 var(--line),0 9px 12px rgba(75,42,20,.3);
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  .adCol:active .adSq{transform:translateY(5px);
+    box-shadow:0 1px 0 var(--line),0 2px 5px rgba(75,42,20,.3)}
+  @media (hover:hover){.adCol:hover .adSq{filter:brightness(1.08)}}
+  .adSq.green{--c1:linear-gradient(180deg,#8ede6d,#4fae3c)}
+  .adSq.blue {--c1:linear-gradient(180deg,#8ed0f7,#3d92d6)}
+  .adSq .ic{width:66%;height:66%;object-fit:contain;
+    filter:drop-shadow(0 3px 0 rgba(75,42,20,.32))}
+  .adSq .tvb{position:absolute;right:-10px;bottom:-10px;width:30px;height:30px;
+    border-radius:11px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#ffe07a,#e0a017);
+    border:3px solid var(--line);box-shadow:0 3px 0 var(--line)}
+  .adSq .tvb img{width:76%;height:76%;object-fit:contain}
+  .adCol .cap{font-size:11px;color:#fff;-webkit-text-stroke:5px var(--line);
+    paint-order:stroke fill;white-space:nowrap}
+
+  /* Timed income boost, shown on the plot while it runs */
+  #boost{margin-top:7px;display:none;align-items:center;gap:7px;
+    background:rgba(40,20,8,.82);border:4px solid var(--line);border-radius:16px;
+    padding:3px 13px;font-size:14px;color:#ffdc5e;pointer-events:none}
+  #boost.on{display:flex}
+  #boost img{width:19px;height:19px;object-fit:contain}
+
+  #palWrap{position:relative;flex:1;min-height:0;display:flex;
+    flex-direction:column;background:#eda875;border:5px solid var(--line);
+    border-radius:22px;box-shadow:0 8px 0 var(--line);overflow:hidden}
+  #pal{flex:1;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+    display:grid;gap:8px;padding:9px;
+    grid-template-columns:repeat(auto-fill,minmax(94px,1fr));
+    align-content:start;scrollbar-width:none}
+  #pal::-webkit-scrollbar{display:none}
+  #pal .none{grid-column:1/-1;text-align:center;color:#fff;font-size:15px;
+    padding:22px 10px;-webkit-text-stroke:5px var(--line);paint-order:stroke fill}
+
+  .pc{position:relative;background:var(--card);border:3px solid var(--line);
+    border-radius:18px;box-shadow:0 4px 0 var(--line);height:102px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:2px;padding:6px 4px 5px;overflow:visible;
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  .pc:active{transform:translateY(4px);box-shadow:0 0 0 var(--line)}
+  @media (hover:hover){
+    .pc:not(.locked):hover{transform:translateY(-3px);
+      box-shadow:0 7px 0 var(--line);filter:brightness(1.03)}
+  }
+  .pc img{width:78%;height:62%;object-fit:contain;pointer-events:none}
+  .pc img.art{width:auto;height:70%;
+    filter:drop-shadow(0 3px 3px rgba(75,42,20,.32))}
+  .pc .px{display:flex;align-items:center;gap:4px;font-size:14px;color:#a9741f;
+    pointer-events:none}
+  .pc .px img{width:17px;height:17px}
+  .pc.poor .px{color:#c0392b}
+  /* an unaffordable card is not a dead end - it carries the ad chip that buys
+     this one ingredient, so the lit recipe stays reachable */
+  .pc.poor:after{content:"";position:absolute;right:-8px;bottom:-8px;
+    width:26px;height:26px;border-radius:9px;
+    /* two LAYERS, comma-separated: an image and a gradient in one layer is
+       invalid and drops the whole declaration */
+    background:url(assets/icon/clapboard.png) center/64% no-repeat,
+      linear-gradient(180deg,#ffe07a,#e0a017);
+    border:3px solid var(--line);box-shadow:0 2px 0 var(--line)}
+  /* Spare stock, and ONLY when there is some - a "0" on all 52 cards is 52
+     badges saying nothing. */
+  /* RARITY BY COLOUR, keyed to the rebirth band that unlocks it - so the tint
+     tells you both how precious a thing is and which act it came from, and the
+     palette reads as tiers at a glance instead of 52 identical cream cards. */
+  .pc.r0{background:linear-gradient(180deg,#fffaf2,#eadfd0);border-color:var(--line)}
+  .pc.r1{background:linear-gradient(180deg,#e6ffd9,#a8dd8a)}
+  .pc.r2{background:linear-gradient(180deg,#dcf1ff,#8ec4ee)}
+  .pc.r3{background:linear-gradient(180deg,#f0e0ff,#c193e8)}
+  .pc.r4{background:linear-gradient(180deg,#fff0c9,#f5c451)}
+  .pc.locked{filter:grayscale(.85) brightness(.94);cursor:default}
+  /* The positive half of the filter: greying the other fifty says where NOT to
+     look, this says where TO look. */
+  .pc.hot{border-color:#f0a81e;box-shadow:0 4px 0 var(--line),
+    0 0 0 4px rgba(246,195,51,.65),0 0 18px 4px rgba(246,195,51,.5);
+    animation:hotcard 1.1s ease-in-out infinite}
+  @keyframes hotcard{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .pc.hot .px{color:#8a5a00}
+  .pc .lk{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:3px;text-align:center;
+    background:rgba(75,42,20,.55);border-radius:14px;color:#fff;font-size:11px;
+    line-height:1.15}
+  .pc .lk img{width:36%;height:auto}
+  .pc .lk{font-size:16px}
+
+  /* Off-screen usable ingredients. Shown per direction, tap to jump. */
+  .palArrow{position:absolute;left:50%;width:52px;height:34px;
+    transform:translateX(-50%);border-radius:17px;background:#f6c333;
+    border:4px solid var(--line);box-shadow:0 4px 0 var(--line);
+    display:none;align-items:center;justify-content:center;cursor:pointer;
+    z-index:6}
+  .palArrow.on{display:flex}
+  .palArrow img{width:24px;height:24px;object-fit:contain}
+  #palUp{top:9px;animation:nudgeUp 1.1s ease-in-out infinite}
+  #palDown{bottom:9px;animation:nudgeDown 1.1s ease-in-out infinite}
+  @keyframes nudgeUp{0%,100%{transform:translate(-50%,0)}
+    50%{transform:translate(-50%,-5px)}}
+  @keyframes nudgeDown{0%,100%{transform:translate(-50%,0)}
+    50%{transform:translate(-50%,5px)}}
+  .palArrow:active{transform:translate(-50%,3px);box-shadow:0 1px 0 var(--line);
+    animation:none}
+
+  /* ---------------- bottom nav ---------------- */
+  #nav{position:absolute;left:0;right:0;
+    bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;
+    display:flex;justify-content:center;gap:16px;pointer-events:none}
+  #nav .btn{width:var(--btn);height:var(--btn)}
+
+  /* ---------------- fx ---------------- */
+  #fx{position:absolute;inset:0;pointer-events:none;z-index:45;overflow:hidden}
+  .pop{position:absolute;font-size:24px;color:#ffdc5e;white-space:nowrap;
+    -webkit-text-stroke:7px var(--line);paint-order:stroke fill;
+    transform:translate(-50%,-50%);animation:rise .8s ease-out forwards}
+  @keyframes rise{to{transform:translate(-50%,-170%);opacity:0}}
+  .spark{position:absolute;width:12px;height:12px;border-radius:50%;
+    background:#ffd45e;border:3px solid var(--line);
+    transform:translate(-50%,-50%);animation:fly .62s ease-out forwards}
+  @keyframes fly{to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)))
+    scale(.2);opacity:0}}
+  /* a coin thrown from the purse to whatever you just bought */
+  .fly{position:absolute;width:26px;height:26px;transform:translate(-50%,-50%);
+    transition:left .38s cubic-bezier(.4,0,.6,1),top .38s cubic-bezier(.5,-0.4,.7,1),
+      opacity .38s ease-in}
+  .fly img{width:100%;height:100%}
+
+  #toast{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);
+    z-index:46;pointer-events:none;opacity:0;font-size:21px;color:#fff;
+    -webkit-text-stroke:7px var(--line);paint-order:stroke fill;white-space:nowrap}
+  #toast.on{animation:toast 1.5s ease-out}
+  @keyframes toast{0%{opacity:0;transform:translate(-50%,-30%)}
+    18%{opacity:1;transform:translate(-50%,-50%)}
+    80%{opacity:1}100%{opacity:0;transform:translate(-50%,-70%)}}
+
+  /* ---------------- sheets ---------------- */
+  .sheet{position:absolute;inset:0;z-index:50;display:none;
+    background:rgba(50,26,12,.6);align-items:center;justify-content:center;
+    padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom))}
+  .sheet.on{display:flex}
+  .panel{background:var(--peach);border:6px solid var(--line);border-radius:30px;
+    box-shadow:0 12px 0 var(--line),0 20px 30px rgba(75,42,20,.35);
+    width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;
+    overflow:hidden}
+  .panel h2{font-size:28px;padding:14px 16px 10px;text-align:center;
+    letter-spacing:2px;color:#fff;-webkit-text-stroke:8px var(--line);
+    paint-order:stroke fill;flex:none}
+  .panel .body{overflow-y:auto;touch-action:pan-y;padding:0 14px 14px;
+    overscroll-behavior:contain;flex:1}
+  .panel .foot{flex:none;display:flex;justify-content:center;gap:16px;padding:10px 0 14px}
+  .panel .foot .btn{width:62px;height:62px}
+
+  #dexGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(106px,1fr));gap:12px}
+  .dcell{background:var(--card);border-radius:20px;border:3px solid var(--line);
+    box-shadow:0 5px 0 var(--line);padding:9px 5px;text-align:center;cursor:pointer;
+    transition:transform .08s,box-shadow .08s}
+  .dcell img{width:100%;height:70px;object-fit:contain;
+    filter:drop-shadow(0 4px 3px rgba(75,42,20,.25))}
+  .dcell .rc{font-size:19px;margin-top:5px;min-height:24px;color:var(--inkSoft);
+    display:flex;align-items:center;justify-content:center;gap:3px}
+  .dcell .rc img{width:24px;height:24px;object-fit:contain;filter:none}
+  .dcell .act{font-size:13px;color:#a98a72;margin-top:3px;display:flex;
+    align-items:center;justify-content:center;gap:4px}
+  .dcell .act img{width:17px;height:17px;object-fit:contain;filter:none}
+  .dcell.lock img{filter:brightness(0) opacity(.3)}
+  @media (hover:hover){.dcell:hover{transform:translateY(-3px);
+    box-shadow:0 8px 0 var(--line)}}
+
+  /* ---------------- workshop: tasks and upgrades ---------------- */
+  .sec{display:flex;align-items:center;gap:10px;font-size:14px;letter-spacing:3px;
+    color:#fff;margin:4px 0 12px;
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
+  .sec:before,.sec:after{content:"";flex:1;height:4px;border-radius:2px;
+    background:rgba(75,42,20,.25);-webkit-text-stroke:0}
+  .sec:first-child{margin-top:0}
+
+  .row{display:flex;align-items:center;gap:11px;background:var(--card);
+    border:3px solid var(--line);border-radius:20px;box-shadow:0 5px 0 var(--line);
+    padding:10px 11px;margin-bottom:11px}
+  /* the icon sits in a chip that also carries the level, so the level is not
+     competing with the name for the same line */
+  .row .ic{position:relative;flex:none;width:52px;height:52px;border-radius:15px;
+    background:linear-gradient(180deg,#ffe9cf,#e8c39a);
+    border:3px solid var(--line);display:flex;align-items:center;
+    justify-content:center}
+  .row .ic img{width:72%;height:72%;object-fit:contain}
+  .row .ic .lvl{position:absolute;left:-6px;bottom:-7px;font-size:11px;color:#fff;
+    background:#b567e0;border:3px solid var(--line);border-radius:9px;
+    padding:0 5px;box-shadow:0 2px 0 var(--line)}
+  .row .mid{flex:1;min-width:0}
+  .row .nm{font-size:15px;color:var(--ink);line-height:1.1}
+  .row .sub{font-size:12px;color:#96684a;margin-top:2px;line-height:1.2}
+  /* the count lives inside the bar - printing it above as well said the same
+     thing twice and cost the row a line */
+  .row .bar{position:relative;height:18px;border-radius:9px;
+    background:rgba(75,42,20,.2);border:3px solid var(--line);margin-top:6px;
+    overflow:hidden}
+  .row .bar i{display:block;height:100%;width:0;
+    background:linear-gradient(90deg,#f6c333,#ffe07a);transition:width .3s}
+  .row .bar b{position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;font-size:11px;font-weight:400;color:#4b2a14}
+
+  /* THE PRICE PILL. Three states that read apart at arm's length. */
+  .row .go{flex:none;min-width:76px;display:flex;align-items:center;
+    justify-content:center;gap:5px;font-size:15px;color:#20340f;
+    background:linear-gradient(180deg,#8ede6d,#4fae3c);
+    border:3px solid var(--line);border-radius:14px;padding:9px 11px;
+    box-shadow:0 5px 0 var(--line);cursor:pointer;white-space:nowrap;
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  .row .go img{width:18px;height:18px}
+  .row .go:active{transform:translateY(4px);box-shadow:0 1px 0 var(--line)}
+  @media (hover:hover){.row .go:not(.dim):hover{filter:brightness(1.08)}}
+  .row .go.dim{background:linear-gradient(180deg,#d6cabf,#b3a396);
+    color:#8c3b2a;cursor:default;box-shadow:0 5px 0 var(--line)}
+  .row .go.claim{background:linear-gradient(180deg,#ffe07a,#e0a017);color:#3a2408;
+    animation:hotcard 1s ease-in-out infinite}
+  .row.maxed{filter:grayscale(.5) brightness(.97)}
+  .row .go.max{background:linear-gradient(180deg,#cbbdb0,#a3948a);color:#4b2a14;
+    cursor:default}
+
+  /* ---------------- rebirth ---------------- */
+  #rbBody{text-align:center;color:var(--ink)}
+  /* the multiplier as a jump, not a sentence */
+  #rbJump{display:flex;align-items:center;justify-content:center;gap:14px;
+    margin:4px 0 10px}
+  #rbJump .m{font-size:34px;color:#fff;-webkit-text-stroke:8px var(--line);
+    paint-order:stroke fill}
+  #rbJump .m.next{font-size:46px;color:#ffdc5e;-webkit-text-stroke:10px var(--line);
+    animation:hotcard 1.3s ease-in-out infinite}
+  #rbJump .ar{width:30px;height:30px;object-fit:contain;
+    filter:drop-shadow(0 2px 0 rgba(75,42,20,.3))}
+  #rbBody .line{font-size:15px;margin-top:6px;line-height:1.4}
+  #rbBar{height:22px;border-radius:11px;background:rgba(75,42,20,.25);
+    border:3px solid var(--line);margin:12px 0 4px;overflow:hidden}
+  #rbBar i{display:block;height:100%;width:0;
+    background:linear-gradient(90deg,#b567e0,#e5b6ff);transition:width .3s}
+
+  /* The reward reel. A static grid of icons is a spreadsheet; this is the one
+     screen whose whole job is to make you want the next act. */
+  #rbReel{margin-top:14px;overflow:hidden;border:4px solid var(--line);
+    border-radius:18px;background:rgba(75,42,20,.22);padding:9px 0;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+  #rbTrack{display:flex;gap:10px;width:max-content;animation:pan 18s linear infinite}
+  #rbReel:hover #rbTrack{animation-play-state:paused}
+  @keyframes pan{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  #rbTrack .rw{flex:none;width:74px;height:74px;border-radius:16px;
+    background:var(--card);border:3px solid var(--line);
+    box-shadow:0 4px 0 var(--line);display:flex;align-items:center;
+    justify-content:center}
+  #rbTrack .rw.br{background:#ffe3c6;width:84px;height:84px}
+  #rbTrack .rw img{width:78%;height:78%;object-fit:contain}
+  #rbNone{font-size:15px;color:var(--inkSoft);padding:14px 0}
+  /* the two paths through a rebirth, separated so neither reads as the only
+     one: coins above, attention below */
+  #rbOr{display:flex;align-items:center;gap:10px;margin:14px 0 10px;
+    color:var(--inkSoft);font-size:13px}
+  #rbOr:before,#rbOr:after{content:"";flex:1;height:3px;border-radius:2px;
+    background:rgba(75,42,20,.28)}
+  #rbGo{margin-top:16px;display:inline-flex;align-items:center;gap:9px;
+    font-size:21px;color:#fff;background:#b567e0;
+    border:var(--lineW) solid var(--line);border-radius:18px;padding:10px 24px;
+    box-shadow:0 7px 0 var(--line);cursor:pointer;
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  #rbGo:active{transform:translateY(6px);box-shadow:0 1px 0 var(--line)}
+  #rbGo img{width:26px;height:26px}
+  #rbGo.dim{filter:grayscale(.7) brightness(.9);cursor:default}
+  @media (hover:hover){#rbGo:not(.dim):hover{filter:brightness(1.1)}}
+
+  /* ---------------- onboarding ----------------
+     Nothing here takes input: the whole layer is pointer-events:none, so the
+     ring is a pointer, never a gate. A player who already knows the game just
+     plays and the steps tick over behind the highlight. */
+  #tut{position:absolute;inset:0;z-index:55;display:none;pointer-events:none}
+  #tut.on{display:block}
+  #tutRing{position:absolute;border:5px solid #ffd45e;border-radius:22px;
+    box-shadow:0 0 0 4px var(--line),0 0 0 9999px rgba(40,20,8,.45),
+      0 0 22px 6px rgba(255,212,94,.55);
+    transition:left .22s,top .22s,width .22s,height .22s;
+    animation:tring 1.2s ease-in-out infinite}
+  @keyframes tring{0%,100%{border-color:#ffd45e}50%{border-color:#fff6cf}}
+  /* A backing pill, because the caption lands wherever the target is not - and
+     that is often directly on top of another control. */
+  #tutTip{position:absolute;left:50%;transform:translateX(-50%);
+    max-width:min(92vw,420px);text-align:center;font-size:19px;color:#fff;
+    -webkit-text-stroke:7px var(--line);paint-order:stroke fill;line-height:1.25;
+    background:rgba(40,20,8,.82);border:4px solid var(--line);border-radius:18px;
+    padding:9px 16px}
+  #tutHand{position:absolute;width:44px;height:44px;
+    transform:translate(-50%,-50%);animation:tapdot 1.2s ease-in-out infinite}
+  #tutHand:after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:rgba(255,255,255,.85);border:4px solid var(--line)}
+  @keyframes tapdot{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.9}
+    50%{transform:translate(-50%,-50%) scale(.7);opacity:.5}}
+
+  /* ---------------- the discovery moment ---------------- */
+  #reveal{position:absolute;inset:0;z-index:60;display:none;overflow:hidden;
+    align-items:center;justify-content:center;background:rgba(40,20,8,.72)}
+  #reveal.on{display:flex}
+  #revCard{position:relative;text-align:center;animation:slam .5s cubic-bezier(.15,1.5,.4,1)}
+  @keyframes slam{0%{transform:scale(2.4) rotate(-14deg);opacity:0}
+    55%{transform:scale(.92) rotate(3deg);opacity:1}
+    100%{transform:scale(1) rotate(0)}}
+  #revCard .k{font-size:22px;letter-spacing:5px;color:#ffdc5e;
+    -webkit-text-stroke:7px var(--line);paint-order:stroke fill}
+  #revCard img{width:min(58vw,300px);height:min(40vh,300px);object-fit:contain;
+    filter:drop-shadow(0 12px 14px rgba(0,0,0,.5))}
+  #revCard .r{margin-top:2px;font-size:26px;color:#ffdc5e;
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
+  #revCard .tapme{margin-top:14px;font-size:14px;letter-spacing:3px;color:#fff;
+    -webkit-text-stroke:5px var(--line);paint-order:stroke fill;opacity:.85}
+  /* a slow star burst behind the card, drawn with one gradient */
+  #revRay{position:absolute;width:200vmax;height:200vmax;
+    background:repeating-conic-gradient(rgba(255,255,255,.15) 0 6deg,transparent 6deg 12deg);
+    animation:spin 24s linear infinite;pointer-events:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ---------------- responsive ---------------- */
+  @media (max-width:560px){
+    :root{--btn:56px;--cell:52px}
+    #coins{font-size:28px}#purse img{width:34px;height:34px}
+    #rate,#act{font-size:15px;-webkit-text-stroke-width:5px}
+    #slots{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+    #pal{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))}
+    #dexGrid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+    #nav{gap:10px}
+  }
+  @media (max-width:400px){
+    :root{--btn:50px;--cell:46px}
+    #coins{font-size:24px}
+    #slots{grid-template-columns:repeat(auto-fill,minmax(82px,1fr))}
+    .pc{height:92px}
+    #nav{gap:7px}
+  }
+  /* 32:9 is ~1280x360: the bars must not eat the whole board */
+  @media (max-height:470px){
+    :root{--btn:50px;--cell:44px}
+
+    #top{padding-top:calc(5px + env(safe-area-inset-top))}
+    #coins{font-size:23px}#purse{padding:3px 15px 3px 6px}
+    #purse img{width:27px;height:27px}
+    #sub{margin-top:4px}#rate,#act{font-size:13px;-webkit-text-stroke-width:4px}
+    #nav{bottom:calc(6px + env(safe-area-inset-bottom))}
+    #revCard img{height:34vh}
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+
+<div id="top">
+  <div id="purse"><img src="assets/icon/coin.png" alt=""><span id="coins">0</span></div>
+  <div id="sub"><span id="rate">+0/s</span><span id="act">REBIRTH 0</span></div>
+  <div id="evt"><span id="evtName"></span><span id="evtTime"></span></div>
+  <div id="boost"><img src="assets/icon/sparkle.png" alt="">
+    <span id="boostT"></span></div>
+</div>
+
+<div id="viewPlot" class="view on">
+  <div id="plot"><div id="slots"></div></div>
+  <div id="plotFoot">
+    <div id="buySlot"><img src="assets/icon/plus.png" alt="">
+      <img src="assets/icon/coin.png" alt=""><span id="slotPx">0</span></div>
+    <div class="adCol" id="boostAd">
+      <div class="adSq green"><img class="ic" src="assets/icon/cash.png" alt="">
+        <span class="tvb"><img src="assets/icon/clapboard.png" alt=""></span></div>
+      <span class="cap">2x FOR 3 MIN</span></div>
+    <div class="adCol" id="slotAd">
+      <div class="adSq blue"><img class="ic" src="assets/icon/plus.png" alt="">
+        <span class="tvb"><img src="assets/icon/clapboard.png" alt=""></span></div>
+      <span class="cap">FREE SLOT</span></div>
+  </div>
+</div>
+
+<div id="viewCraft" class="view">
+  <div id="table">
+    <div id="g3"></div>
+    <img id="arrow" src="assets/icon/chev.png" alt="">
+    <div id="res"><span class="q">?</span></div>
+  </div>
+  <div id="forges"></div>
+  <div id="palWrap">
+    <div id="pal"></div>
+    <div id="palUp" class="palArrow"><img src="assets/icon/up.png" alt=""></div>
+    <div id="palDown" class="palArrow"><img src="assets/icon/down.png" alt=""></div>
+  </div>
+</div>
+
+<div id="nav">
+  <button id="navPlot" class="btn green on" aria-label="Plot">
+    <img src="assets/icon/home.png" alt="" draggable="false">
+  </button>
+  <button id="navCraft" class="btn orange" aria-label="Crafting table">
+    <img src="assets/icon/anvil.png" alt="" draggable="false">
+    <span id="badgeCraft" class="badge time hidden"></span>
+  </button>
+  <button id="navRb" class="btn purple" aria-label="Rebirth">
+    <img src="assets/icon/rebirth.png" alt="" draggable="false">
+    <span id="badgeRb" class="badge go hidden">!</span>
+  </button>
+  <button id="navShop" class="btn gold" aria-label="Upgrades and tasks">
+    <img src="assets/icon/hammer.png" alt="" draggable="false">
+    <span id="badgeShop" class="badge go hidden">!</span>
+  </button>
+  <button id="navDex" class="btn blue" aria-label="Collection">
+    <img src="assets/icon/book.png" alt="" draggable="false">
+    <span id="badgeDex" class="badge">33</span>
+  </button>
+</div>
+
+<div id="tut"><div id="tutRing"></div><div id="tutHand"></div>
+  <div id="tutTip"></div></div>
+
+<div id="dragLayer"></div>
+<div id="fx"></div>
+<div id="toast"></div>
+
+<div id="dex" class="sheet">
+  <div class="panel">
+    <h2>COLLECTION</h2>
+    <div class="body"><div id="dexGrid"></div></div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false"></button></div>
+  </div>
+</div>
+
+<div id="shop" class="sheet">
+  <div class="panel">
+    <h2>WORKSHOP</h2>
+    <div class="body">
+      <div class="sec">TASKS</div>
+      <div id="taskList"></div>
+      <div class="sec">PERMANENT UPGRADES</div>
+      <div id="upList"></div>
+    </div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false"></button></div>
+  </div>
+</div>
+
+<div id="rb" class="sheet">
+  <div class="panel">
+    <h2>REBIRTH</h2>
+    <div class="body"><div id="rbBody">
+      <div id="rbJump"><span class="m" id="rbCur">x1</span>
+        <img class="ar" src="assets/icon/chev.png" alt=""><span class="m next" id="rbNextM">x2.5</span></div>
+      <div class="line" id="rbNow"></div>
+      <div id="rbBar"><i></i></div>
+      <div class="line" id="rbNeed"></div>
+      <div id="rbReel"><div id="rbTrack"></div></div>
+      <div class="line" id="rbNext"></div>
+      <div id="rbOr"><span>OR</span></div>
+      <div class="adBtn" id="rbAd"><img src="assets/icon/clapboard.png" alt="">
+        <span id="rbAdT">WATCH ADS  0/10</span></div>
+      <div id="rbGo"><img src="assets/icon/rebirth.png" alt=""><span>REBIRTH</span></div>
+    </div></div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false"></button></div>
+  </div>
+</div>
+
+<div id="away" class="sheet">
+  <div class="panel">
+    <h2>WHILE YOU WERE AWAY</h2>
+    <div class="body" style="text-align:center">
+      <div id="awayAmt" style="font-size:38px;color:#ffdc5e;
+        -webkit-text-stroke:9px var(--line);paint-order:stroke fill"></div>
+      <div class="adBtn" id="awayAd" style="margin-top:16px">
+        <img src="assets/icon/clapboard.png" alt=""><span>DOUBLE IT</span></div>
+    </div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false"></button></div>
+  </div>
+</div>
+
+<div id="reveal">
+  <div id="revRay"></div>
+  <div id="revCard">
+    <div class="k">NEW BRAINROT</div>
+    <img id="revImg" src="" alt="" draggable="false">
+    <div class="r" id="revRate"></div>
+    <div class="tapme">TAP TO CONTINUE</div>
+  </div>
+</div>
+
+<script src="src/plot.js?v=p33"></script>
+<script>PLOT.boot();</script>
+</body>
+</html>

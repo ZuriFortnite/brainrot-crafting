@@ -1,0 +1,8 @@
+{
+ "l": 0.08298,
+ "r": 0.92024,
+ "t": 0.09534,
+ "b": 0.91451,
+ "aspect": 0.9892,
+ "note": "mid-depth plane of the perspective box; matches BOX in src/main.js"
+}

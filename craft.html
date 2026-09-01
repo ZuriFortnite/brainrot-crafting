@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Brainrot Craft</title>
+<style>
+  /* Fredoka One (SIL OFL), bundled locally - Playables forbids network calls,
+     so a Google Fonts <link> would fail cert. Single weight, declared 400-900
+     so every weight we ask for maps onto this face instead of a faux-bold. */
+  @font-face{font-family:"Fredoka One";font-style:normal;font-weight:400 900;
+    font-display:block;src:url(assets/font/fredokaone.woff2) format("woff2")}
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;height:100%;overflow:hidden;user-select:none;
+    -webkit-user-select:none;touch-action:none;
+    font-family:"Fredoka One",Verdana,"Trebuchet MS",sans-serif;
+    background:#f7c9a3;color:#5a3620}
+
+  :root{
+    --peach:#f7c9a3; --peachTop:#fbdcc0; --peachBot:#f0b183;
+    --side:#eda875; --sideEdge:#d98d58;
+    --ink:#5a3620; --inkSoft:#8a5d3c;
+    --card:#fff3e6; --cardEdge:#dcb894;
+    /* ONE outline colour for the whole toon look - buttons, cards, panels and
+       the character sprites all trace with this, so nothing reads as flat. */
+    --line:#4b2a14; --lineW:4px;
+    --sideW:154px; --arrowW:120px; --pw:136px; --cellH:88px; --btn:76px;
+  }
+
+  /* ---------------- the world ---------------- */
+  #bg{position:absolute;inset:0;
+    background:linear-gradient(180deg,var(--peachTop) 0%,var(--peach) 55%,var(--peachBot) 100%)}
+  /* faint dot grid so the empty board is not a flat wall of colour */
+  #bg:after{content:"";position:absolute;inset:0;opacity:.35;
+    background-image:radial-gradient(rgba(255,255,255,.75) 2px,transparent 2px);
+    background-size:34px 34px}
+
+  #board{position:absolute;left:0;top:0;bottom:0;right:var(--sideW);
+    overflow:hidden}
+
+  /* ---------------- chunky buttons ----------------
+     Flat rounded squares with a hard bottom edge, pressed by moving down onto
+     that edge. Pure CSS: it scales to any viewport, which nine-sliced PNG
+     frames could not without shipping a frame per size. */
+  .btn{position:relative;display:flex;align-items:center;justify-content:center;
+    border:var(--lineW) solid var(--line);border-radius:26%;
+    pointer-events:auto;cursor:pointer;background:var(--c1);
+    box-shadow:0 8px 0 var(--line),0 12px 16px rgba(75,42,20,.3);
+    transition:transform .07s,box-shadow .07s}
+  .btn:active{transform:translateY(7px);
+    box-shadow:0 1px 0 var(--line),0 2px 6px rgba(75,42,20,.3)}
+  /* an inner highlight band: the glossy toy read, not a flat swatch */
+  .btn:before{content:"";position:absolute;left:12%;right:12%;top:9%;height:26%;
+    border-radius:999px;background:rgba(255,255,255,.34);pointer-events:none}
+  /* Icons from the vector pack, not inline paths: they carry the same chunky
+     outline as the buttons, which inline SVG silhouettes did not. */
+  .btn img{width:62%;height:62%;object-fit:contain;position:relative;
+    pointer-events:none;filter:drop-shadow(0 3px 0 rgba(75,42,20,.32))}
+  .btn.orange{--c1:#f2913c;--c2:#c56d1d}
+  .btn.grey  {--c1:#c3b3a6;--c2:#9b8a7c}
+  .btn.pink  {--c1:#f0729b;--c2:#c44873}
+  .btn.blue  {--c1:#4fa6e8;--c2:#2a79ba}
+  .btn:disabled{opacity:.45;cursor:default}
+
+  /* badge in the top-right notch of a button */
+  .badge{position:absolute;top:-12px;right:-12px;min-width:34px;height:34px;
+    padding:0 8px;border-radius:17px;display:flex;align-items:center;
+    justify-content:center;font-size:17px;color:#fff;z-index:2;
+    border:4px solid var(--line);box-shadow:0 3px 0 rgba(75,42,20,.35)}
+  .badge.yellow{background:#f6c333;color:#6b4a06}
+  .badge.red{background:#e8483f}
+  .badge.hidden{display:none}
+
+  /* ---------------- header ---------------- */
+  #hdr{position:absolute;left:0;top:0;right:var(--sideW);
+    padding:calc(12px + env(safe-area-inset-top)) 12px 0
+            calc(12px + env(safe-area-inset-left));
+    pointer-events:none;z-index:30}
+  #btnClear{width:var(--btn);height:var(--btn)}
+  #counter{position:absolute;left:50%;top:calc(8px + env(safe-area-inset-top));
+    transform:translateX(-50%);text-align:center;line-height:1}
+  #count{font-size:68px;color:#fff;-webkit-text-stroke:11px var(--line);
+    paint-order:stroke fill;text-shadow:0 6px 0 rgba(75,42,20,.25)}
+  #countLbl{margin-top:6px;font-size:21px;letter-spacing:4px;color:#fff;
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
+
+  /* ---------------- sidebar ---------------- */
+  #side{position:absolute;right:0;top:0;bottom:0;width:var(--sideW);
+    background:var(--side);border-left:var(--lineW) solid var(--line);
+    box-shadow:-8px 0 22px rgba(75,42,20,.22);
+    display:flex;flex-direction:column;align-items:center;
+    padding:calc(8px + env(safe-area-inset-top)) 0
+            calc(8px + env(safe-area-inset-bottom));gap:6px;z-index:25}
+  #side .btn{width:var(--arrowW);height:52px;border-radius:18px;flex:none}
+  #side .btn img{width:auto;height:76%}
+  #side .btn:before{top:12%;height:30%}
+  #grid{flex:1;width:100%;overflow-y:auto;overscroll-behavior:contain;
+    touch-action:pan-y;
+    display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:9px 8px 14px;
+    align-content:start;align-items:start;
+    scrollbar-width:none;scroll-behavior:smooth}
+  #grid::-webkit-scrollbar{display:none}
+
+  .cell{background:var(--card);border-radius:18px;
+    border:3px solid var(--line);box-shadow:0 4px 0 var(--line);
+    height:var(--cellH);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:2px;cursor:grab;overflow:hidden;padding:4px 2px;
+    transition:transform .06s,box-shadow .06s}
+  .cell:active{transform:translateY(4px);box-shadow:0 0 0 var(--line)}
+  .cell .art{font-size:calc(var(--cellH) * .46);line-height:1;pointer-events:none}
+  .cell img{width:80%;height:60%;object-fit:contain;pointer-events:none;
+    filter:drop-shadow(0 2px 2px rgba(75,42,20,.28))}
+  .cell .nm{font-size:12px;color:var(--inkSoft);text-align:center;line-height:1.05;
+    max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    pointer-events:none}
+  .cell.br{background:#ffe3c6}
+
+  /* ---------------- bottom bar ---------------- */
+  #bottom{position:absolute;left:0;right:var(--sideW);
+    bottom:calc(14px + env(safe-area-inset-bottom));
+    display:flex;justify-content:center;gap:26px;pointer-events:none;z-index:30}
+  #bottom .btn{width:calc(var(--btn) + 14px);height:calc(var(--btn) + 14px)}
+
+  /* ---------------- board pieces ---------------- */
+  .piece{position:absolute;width:var(--pw);display:flex;flex-direction:column;
+    align-items:center;cursor:grab;will-change:transform}
+  /* The character art carries its own line work - no traced outline here, it
+     only fights the drawing. A soft ground shadow is enough to lift it. */
+  .piece img{width:100%;height:calc(var(--pw) * .82);object-fit:contain;
+    pointer-events:none;filter:drop-shadow(0 7px 6px rgba(75,42,20,.32))}
+  .piece .art{width:100%;height:calc(var(--pw) * .82);display:flex;
+    align-items:center;justify-content:center;font-size:calc(var(--pw) * .5);
+    pointer-events:none;filter:drop-shadow(0 4px 3px rgba(90,54,32,.28))}
+  .piece .nm{margin-top:0;font-size:15px;color:var(--ink);
+    background:var(--card);border:3px solid var(--line);border-radius:12px;
+    padding:1px 9px;white-space:nowrap;pointer-events:none;
+    box-shadow:0 3px 0 var(--line)}
+  .piece.drag{cursor:grabbing}
+  .piece.drag img,.piece.drag .art{transform:scale(1.08)}
+  .piece.hot .nm{background:#ffe08a}
+  .piece.hot img{filter:drop-shadow(0 0 9px #fff) drop-shadow(0 0 16px #ffd45e)
+    drop-shadow(0 7px 6px rgba(75,42,20,.32))}
+  .piece.hot .art{filter:drop-shadow(0 0 10px #fff) drop-shadow(0 0 16px #ffd45e)}
+
+  @keyframes pop{0%{transform:scale(.2)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+  .piece.fresh img,.piece.fresh .art{animation:pop .42s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes nope{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}
+    75%{transform:translateX(7px)}}
+  .piece.nope{animation:nope .26s}
+
+  /* ---------------- fx ---------------- */
+  #fx{position:absolute;inset:0;pointer-events:none;z-index:28;overflow:hidden}
+  .spark{position:absolute;width:9px;height:9px;border-radius:50%;
+    background:#ffd45e;transform:translate(-50%,-50%);
+    animation:fly .62s ease-out forwards}
+  .spark.big{width:14px;height:14px;background:#fff1a8}
+  @keyframes fly{to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)))
+    scale(.2);opacity:0}}
+
+  #tip{position:absolute;left:0;right:var(--sideW);
+    bottom:calc(env(safe-area-inset-bottom) + var(--btn) + 46px);
+    text-align:center;font-size:24px;letter-spacing:3px;
+    color:#fff;-webkit-text-stroke:7px var(--line);paint-order:stroke fill;
+    pointer-events:none;z-index:31;transition:opacity .3s}
+  #tip.off{opacity:0}
+
+  #toast{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);
+    z-index:40;pointer-events:none;opacity:0;text-align:center}
+  #toast.on{animation:toast 1.9s ease-out}
+  #toast .k{font-size:20px;letter-spacing:4px;color:#fff;
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
+  #toast .v{font-size:46px;color:#ffdc5e;-webkit-text-stroke:10px var(--line);
+    paint-order:stroke fill;margin-top:2px}
+  @keyframes toast{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+    14%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+    24%{transform:translate(-50%,-50%) scale(1)}
+    80%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-62%) scale(1)}}
+
+  /* ---------------- overlays ---------------- */
+  .sheet{position:absolute;inset:0;z-index:50;display:none;
+    background:rgba(60,32,16,.55);
+    align-items:center;justify-content:center;
+    padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom))}
+  .sheet.on{display:flex}
+  .panel{background:var(--peach);border:6px solid var(--line);border-radius:30px;
+    box-shadow:0 12px 0 var(--line),0 20px 30px rgba(75,42,20,.35);width:min(560px,100%);
+    max-height:100%;display:flex;flex-direction:column;overflow:hidden}
+  .panel h2{font-size:30px;color:#fff;
+    -webkit-text-stroke:8px var(--line);paint-order:stroke fill;padding:14px 16px 10px;text-align:center;
+    letter-spacing:2px;color:#7a4a2a;flex:none}
+  .panel .body{overflow-y:auto;padding:0 14px 14px;overscroll-behavior:contain;
+    flex:1;touch-action:pan-y}
+  .panel .foot{flex:none;display:flex;justify-content:center;padding:10px 0 14px}
+  .panel .foot .btn{width:64px;height:64px}
+
+  #dexGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:12px}
+  .dcell{background:var(--card);border-radius:20px;border:3px solid var(--line);
+    box-shadow:0 5px 0 var(--line);padding:9px 5px;text-align:center;cursor:pointer}
+  .dcell img{width:100%;height:76px;object-fit:contain;
+    filter:drop-shadow(0 4px 3px rgba(75,42,20,.25))}
+  .dcell .nm{font-size:13px;color:var(--ink);margin-top:5px;line-height:1.15}
+  .dcell.lock img{filter:brightness(0) opacity(.3)}
+  .dcell.lock .nm{color:#a98a72}
+  .dcell .hint{font-size:17px;margin-top:2px;letter-spacing:2px;min-height:18px}
+
+  #searchWrap{padding:0 14px 12px;flex:none}
+  #q{width:100%;touch-action:auto;user-select:text;-webkit-user-select:text;font-family:inherit;font-size:19px;color:var(--ink);
+    background:var(--card);border:4px solid var(--line);border-radius:18px;
+    padding:12px 15px;outline:none}
+  #qList{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+
+  /* A 9:32 viewport is ~360px wide: the sidebar must not eat the board. */
+  @media (max-width:560px){
+    :root{--sideW:128px;--arrowW:100px;--pw:112px;--cellH:76px;--btn:64px}
+    #count{font-size:52px;-webkit-text-stroke-width:9px}
+    #countLbl{font-size:17px;letter-spacing:3px;-webkit-text-stroke-width:5px}
+    #tip{font-size:20px;-webkit-text-stroke-width:5px}
+    #dexGrid{grid-template-columns:repeat(auto-fill,minmax(94px,1fr))}
+    .dcell img{height:64px}
+  }
+  /* 9:32 is ~360 wide: below this a two-wide palette would crush the board */
+  @media (max-width:400px){
+    :root{--sideW:112px;--arrowW:88px;--pw:98px;--cellH:66px;--btn:58px}
+    #count{font-size:44px;-webkit-text-stroke-width:8px}
+    #countLbl{font-size:15px}
+    .cell .nm{font-size:10px}
+  }
+  /* 32:9 is ~1280x360: the header and the bottom bar must not collide. */
+  @media (max-height:460px){
+    :root{--pw:96px;--cellH:70px;--btn:56px}
+    #count{font-size:40px;-webkit-text-stroke-width:7px}
+    #countLbl{font-size:14px;-webkit-text-stroke-width:4px}
+    #tip{font-size:19px;-webkit-text-stroke-width:5px}
+    #bottom{bottom:calc(8px + env(safe-area-inset-bottom))}
+    #side .btn{height:40px}
+    .dcell img{height:56px}
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="board"></div>
+<div id="fx"></div>
+
+<div id="hdr">
+  <button id="btnClear" class="btn orange" aria-label="Clear the board">
+    <img src="assets/icon/brush.png" alt="" draggable="false">
+  </button>
+  <div id="counter"><div id="count">0/33</div><div id="countLbl">BRAINROTS</div></div>
+</div>
+
+<div id="side">
+  <button id="sideUp" class="btn grey" aria-label="Scroll up">
+    <img src="assets/icon/up.png" alt="" draggable="false">
+  </button>
+  <div id="grid"></div>
+  <button id="sideDown" class="btn grey" aria-label="Scroll down">
+    <img src="assets/icon/down.png" alt="" draggable="false">
+  </button>
+</div>
+
+<div id="bottom">
+  <button id="btnSearch" class="btn pink" aria-label="Search items">
+    <img src="assets/icon/search.png" alt="" draggable="false">
+    <span id="badgeSearch" class="badge yellow">0</span>
+  </button>
+  <button id="btnDex" class="btn blue" aria-label="Collection">
+    <img src="assets/icon/book.png" alt="" draggable="false">
+    <span id="badgeDex" class="badge red">0</span>
+  </button>
+</div>
+
+<div id="tip">DRAG TWO TOGETHER</div>
+
+<div id="toast"><div class="k">NEW BRAINROT</div><div class="v" id="toastName"></div></div>
+
+<div id="dex" class="sheet">
+  <div class="panel">
+    <h2>COLLECTION</h2>
+    <div class="body"><div id="dexGrid"></div></div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false">
+    </button></div>
+  </div>
+</div>
+
+<div id="search" class="sheet">
+  <div class="panel">
+    <h2>SEARCH</h2>
+    <div id="searchWrap"><input id="q" type="text" autocomplete="off"
+      autocapitalize="off" spellcheck="false" placeholder="type a name..."></div>
+    <div class="body"><div id="qList"></div></div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false">
+    </button></div>
+  </div>
+</div>
+
+<script src="src/craft.js?v=c2"></script>
+<script>CRAFT.boot();</script>
+</body>
+</html>
