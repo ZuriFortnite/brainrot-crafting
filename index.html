@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Brainrot Crafting</title>
+<!-- The Playables SDK. MUST load before any game code, so it sits here in the
+     head rather than beside the game scripts at the end of the body. It is the
+     one external request the certification allows - everything else in this
+     bundle is local. Served locally it 404s and stays undefined, which is the
+     documented no-op behaviour our YT.present checks already expect. -->
+<script src="https://www.youtube.com/game_api/v1"></script>
 <style>
   /* Fredoka One (SIL OFL), bundled locally - Playables forbids network calls,
      so a Google Fonts <link> would fail cert. Single weight, declared 400-900
