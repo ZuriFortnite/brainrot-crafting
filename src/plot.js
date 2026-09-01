@@ -957,7 +957,7 @@
     S.tp.craft = (S.tp.craft | 0) + 1;
     const fresh = !seen.has(id);
     if (fresh) { seen.add(id); YT.score(seen.size); }
-    drawForges(); drawPlot(); drawDex(); paint(); save();
+    drawForges(); drawPlot(); dexBadge(); paint(); save();
 
     if (fresh && !silent) { reveal(id); SFX.find(); }
     else if (!silent) {
@@ -1072,7 +1072,8 @@
                      (!locked && !muted && S.coins < priceOf(id) ? ' poor' : '');
       el.dataset.buy = id;
       el.innerHTML =
-        '<img class="art" src="' + it.icon + '" alt="" draggable="false">' +
+        '<img class="art" loading="lazy" src="' + it.icon +
+        '" alt="" draggable="false">' +
         '<span class="px"><img src="assets/icon/coin.png" alt="">' +
         fmt(priceOf(id)) + '</span>' +
         (locked ? '<span class="lk"><img src="assets/icon/rebirth.png" alt="">' +
@@ -1221,6 +1222,14 @@
   }
 
   /* ---------------- collection ---------------- */
+  /* Just the number, no DOM and no images - what boot actually needs. */
+  function dexBadge() {
+    const left = BRS.length - seen.size;
+    const bd = $('badgeDex');
+    bd.textContent = left;
+    bd.classList.toggle('hidden', left === 0);
+  }
+
   function drawDex() {
     const host = $('dexGrid');
     host.innerHTML = '';
@@ -1235,17 +1244,14 @@
       const el = document.createElement('div');
       el.className = 'dcell' + (got ? '' : ' lock');
       el.dataset.id = id;
-      el.innerHTML = '<img src="assets/' + it.set + '/tier' + it.tier +
-        '.png" alt="" draggable="false">' +
+      el.innerHTML = '<img loading="lazy" src="assets/' + it.set + '/tier' +
+        it.tier + '.png" alt="" draggable="false">' +
         '<div class="rc">' + (got ? recipeText(id) : '?') + '</div>' +
         '<div class="act"><img src="assets/icon/rebirth.png" alt="">' +
         it.band + '</div>';
       host.appendChild(el);
     }
-    const left = BRS.length - seen.size;
-    const bd = $('badgeDex');
-    bd.textContent = left;
-    bd.classList.toggle('hidden', left === 0);
+    dexBadge();
   }
 
   function recipeText(id) {
@@ -1480,7 +1486,11 @@
   }
 
   function drawAll() {
-    drawPlot(); drawGrid(); drawPal(); drawForges(); drawDex(); drawShop(); paint();
+    /* drawDex() is NOT here on purpose. It builds 33 <img> tags, and having it
+       run at boot made the browser fetch every character sprite - 3.6 MB - for
+       a sheet the player had not opened. The badge is all that is needed until
+       they actually open it. */
+    drawPlot(); drawGrid(); drawPal(); drawForges(); dexBadge(); drawShop(); paint();
   }
 
   /* Reveal and sheet overlays sit above the tutorial ring, so hide it while one
