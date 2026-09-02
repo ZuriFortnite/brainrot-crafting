@@ -330,14 +330,21 @@
      It also sits INSIDE the tile rather than above it. Poking out of the top
      put it outside the hole the tutorial cuts around the result, so the overlay
      dimmed the one badge a first-time player most needs to notice. */
-  #res .new{position:absolute;bottom:4px;left:0;right:0;margin:0 auto;
+  #res .new{position:absolute;bottom:3px;left:0;right:0;margin:0 auto;
     width:max-content;
-    font-size:13px;line-height:1;white-space:nowrap;color:#3a2408;
+    font-size:14px;line-height:1;white-space:nowrap;color:#3a2408;
     background:linear-gradient(180deg,#fff08a,#f6c333);
-    border:3px solid var(--line);border-radius:9px;padding:3px 7px;
+    border:3px solid var(--line);border-radius:9px;padding:3px 8px;
     box-shadow:0 3px 0 var(--line);pointer-events:none;
     animation:hotcard 1s ease-in-out infinite}
-  #res.fresh{background:#f0a83c}
+  /* The badge sat ON the artwork and read as clutter rather than as a label -
+     technically on top, practically invisible. The art gives up the bottom of
+     the tile so the badge has clean space to sit in.
+
+     The tile deliberately keeps its READY green. Tinting it amber for a new
+     result put a gold badge on a gold tile, which is how a label meant to catch
+     the eye ended up the hardest thing on screen to see. */
+  #res.fresh img{height:66%;transform:translateY(-16%)}
   .forge .nb{position:absolute;top:calc(var(--fw,56px) * -.13);
     left:calc(var(--fw,56px) * -.13);
     width:calc(var(--fw,56px) * .34);height:calc(var(--fw,56px) * .34);
