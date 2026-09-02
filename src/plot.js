@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p49';
+  const VER = 'p50';
 
   const P = {};
   window.PLOT = P;
@@ -485,6 +485,7 @@
     S.jobs = [];
     S.adRb = 0;
     ingOrder = null;
+    liveAt = -1;                       // a rebirth changes what can be finished
     /* A wiped plot earning nothing is the right cost but a bleak first five
        seconds, so the new act starts with one creature already working. The
        rebirth multiplier applies to it like anything else, so it never stops
@@ -925,7 +926,7 @@
     for (const g of grid) if (g) { have[g.id] = (have[g.id] || 0) + 1; n++; }
     if (!n) return null;
     let best = null;
-    for (const r of RECIPES) {
+    for (const r of liveRecipes()) {
       if (r.total <= n) continue;
       let ok = true;
       for (const id in have) {
@@ -959,13 +960,31 @@
      it is not already complete; the answer is every ingredient those live
      recipes are still short of. Anything else greys out, so you are always
      choosing among options that could actually finish something. */
+  /* Only recipes you can actually FINISH at this rebirth. Without this the
+     filter cheerfully lit a path into a recipe whose last ingredient is locked
+     behind a future rebirth - at rebirth 0 that was 28 of the 53 recipes, so
+     more than half of what the table offered was a dead end you could not see
+     coming. Cached per rebirth, since that is the only thing that changes it. */
+  let liveAt = -1, liveList = null;
+
+  function liveRecipes() {
+    if (liveAt === S.rb && liveList) return liveList;
+    const max = ingMax();
+    liveList = RECIPES.filter(r => {
+      for (const id in r.need) if (D.items[id].tier > max) return false;
+      return true;
+    });
+    liveAt = S.rb;
+    return liveList;
+  }
+
   function usable() {
     const have = {};
     let n = 0;
     for (const g of grid) if (g) { have[g.id] = (have[g.id] || 0) + 1; n++; }
     if (!n) return null;
     const out = new Set();
-    for (const r of RECIPES) {
+    for (const r of liveRecipes()) {
       if (r.total <= n) continue;                 // full, or already overshot
       let ok = true;
       for (const id in have) {
