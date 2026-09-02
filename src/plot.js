@@ -30,6 +30,12 @@
    DOM, not canvas: a few dozen elements, and hit-testing, z-order and the whole
    animation pass come free. */
 (function () {
+  /* Bumped with every deploy and appended to the data fetch. index.html already
+     cache-busts this script, but craft.json did not - so a balance change could
+     ship while every returning player kept the old numbers from cache, which is
+     exactly what happened the first time the curve was retuned. */
+  const VER = 'p47';
+
   const P = {};
   window.PLOT = P;
   const $ = id => document.getElementById(id);
@@ -1889,7 +1895,7 @@
       if (YT.present) { try { window.ytgame.game.saveData('{}'); } catch (e) {} }
     }
 
-    fetch('assets/craft.json')
+    fetch('assets/craft.json?v=' + VER)
       .then(r => r.json())
       .then(d => {
         bootAt(55, 'RECIPES');
