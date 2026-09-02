@@ -91,7 +91,10 @@
     if (!YT.present) return;
     try {
       audioOn = window.ytgame.system.isAudioEnabled();
-      window.ytgame.system.onAudioEnabledChange(on => { audioOn = !!on; });
+      window.ytgame.system.onAudioEnabledChange(on => {
+        audioOn = !!on;
+        if (audioOn) musicStart(); else musicStop();
+      });
     } catch (e) { audioOn = true; }
   }
 
@@ -242,6 +245,81 @@
     nope:  () => play('nope', 0.45, 1,
              () => voice({ f: 150, to: 96, dur: 0.17, gain: 0.06, type: 'square' }))
   };
+
+  /* ---------------- music ----------------
+     GENERATED, not downloaded. A licence-clean loop is a megabyte or two - more
+     than this whole bundle - and repeats audibly within a minute. Four chords, a
+     soft arpeggio, a bass note and a brushed hat, scheduled a beat ahead of the
+     clock so it never stutters. Zero bytes, and it changes key during an event
+     so the world sounds different as well as looking different. */
+  const CHORDS = [[0, 4, 7, 11], [-3, 0, 4, 9], [-5, -1, 2, 7], [2, 5, 9, 12]];
+  const ARP = [0, 2, 1, 3, 2, 1, 3, 0];
+  let musicOn = false, mGain = null, mBeat = 0, mNext = 0, mTimer = 0;
+
+  function note(semi, at, dur, gain, type, root) {
+    const c = ctx();
+    const f = 440 * Math.pow(2, (root + semi - 9) / 12);
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'triangle';
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(gain, at + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g); g.connect(mGain);
+    o.start(at); o.stop(at + dur + 0.02);
+  }
+
+  function hat(at) {
+    const c = ctx();
+    const s = c.createBufferSource();
+    s.buffer = noise();
+    const f = c.createBiquadFilter();
+    f.type = 'highpass'; f.frequency.value = 7000;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.035, at);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 0.05);
+    s.connect(f); f.connect(g); g.connect(mGain);
+    s.start(at); s.stop(at + 0.07);
+  }
+
+  /* Scheduled a beat ahead: setTimeout alone is far too jittery for music, so
+     the timer only decides WHAT to queue and the audio clock decides when. */
+  function musicTick() {
+    if (!musicOn || !audioOn) return;
+    const c = ctx(), spb = 60 / 92 / 2;          // 92bpm, eighth notes
+    while (mNext < c.currentTime + 0.4) {
+      const bar = Math.floor(mBeat / 8) % CHORDS.length;
+      const ch = CHORDS[bar];
+      const ev = evCycle();
+      const root = ev.on ? [3, -2, 5, 0][D.events.list.indexOf(ev.def) % 4] : 0;
+      const step = mBeat % 8;
+      note(ch[ARP[step]] + 12, mNext, spb * 1.6, 0.05, 'triangle', root);
+      if (step === 0) note(ch[0] - 12, mNext, spb * 5, 0.07, 'sine', root);
+      if (step % 2 === 1) hat(mNext);
+      mNext += spb;
+      mBeat++;
+    }
+  }
+
+  function musicStart() {
+    if (musicOn || !audioOn) return;
+    try {
+      const c = ctx();
+      mGain = c.createGain();
+      mGain.gain.value = 0.5;            // sits under the effects
+      mGain.connect(c.destination);
+      mNext = c.currentTime + 0.1;
+      musicOn = true;
+      mTimer = setInterval(musicTick, 120);
+      musicTick();
+    } catch (e) {}
+  }
+
+  function musicStop() {
+    musicOn = false;
+    clearInterval(mTimer);
+    if (mGain) { try { mGain.disconnect(); } catch (e) {} mGain = null; }
+  }
 
   /* ---------------- save ----------------
      ONE versioned record. Inside YouTube the SDK is the store and localStorage
@@ -464,6 +542,9 @@
   /* The status stack grows and shrinks - a boost pill, an event banner - so the
      board is positioned from its MEASURED height rather than a constant that
      silently goes stale the next time a row is added. */
+  /* Re-measured only when the stack could actually have changed - reading
+     offsetHeight every frame forced a reflow for a number that moves perhaps
+     twice a session. */
   let topH = 0;
   function fitTop() {
     const h = $('top').offsetHeight;
@@ -476,7 +557,9 @@
   function paintEvent() {
     const c = evCycle();
     const el = $('evt');
+    const wasLive = el.classList.contains('live');
     el.classList.toggle('live', c.on);
+    if (wasLive !== c.on) fitTop();
     $('evtName').textContent = c.on ? c.def.name : 'NEXT: ' + c.def.name;
     const t = Math.max(0, Math.ceil(c.left));
     $('evtTime').textContent =
@@ -1194,8 +1277,8 @@
         Math.min(100, 100 * have / need).toFixed(0) + '%"></i>' +
         '<b>' + Math.min(have, need) + ' / ' + need + '</b></div></div>' +
         '<div class="go' + (ok ? ' claim' : ' dim') + '" data-task="' + t.k + '">' +
-        (ok ? 'CLAIM'
-            : '<img src="assets/icon/coin.png" alt="">' + fmt(taskReward(t.k))) +
+        '<img src="assets/icon/coin.png" alt="">' +
+        '<span class="v">' + (ok ? 'CLAIM' : fmt(taskReward(t.k))) + '</span>' +
         '</div>';
       tl.appendChild(el);
     }
@@ -1215,10 +1298,56 @@
           ? '<div class="go max">MAX</div>'
           : '<div class="go' + (S.coins < cost ? ' dim' : '') +
             '" data-up="' + u.k + '"><img src="assets/icon/coin.png" alt="">' +
-            fmt(cost) + '</div>');
+            '<span class="v">' + fmt(cost) + '</span></div>');
       ul.appendChild(el);
     }
     $('badgeShop').classList.toggle('hidden', !anyClaim());
+  }
+
+  /* Same story as the workshop: only the numbers move each frame, so only the
+     numbers are written. Rebuilding restarted the reel's pan animation and made
+     the REBIRTH button as hard to press as the upgrade rows were. */
+  function refreshRb() {
+    const nx = rbNext();
+    if (!nx) return;
+    const bar = $('rbBar').firstElementChild;
+    if (bar) bar.style.width = Math.min(100, 100 * S.coins / nx.need).toFixed(1) + '%';
+    put('rbNeed', fmt(S.coins) + ' / ' + fmt(nx.need) + ' coins');
+    $('rbGo').classList.toggle('dim', !canRebirth());
+    const need = adsNeeded();
+    if (need) {
+      put('rbAdT', S.adRb >= need ? 'ADS WATCHED - REBIRTH READY'
+                                  : 'WATCH ADS  ' + S.adRb + '/' + need);
+    }
+  }
+
+  /* The per-frame path. Writes text and toggles classes on rows that already
+     exist - it must never replace a node, because the player may be pressing
+     one. drawShop() rebuilds, and is reserved for real structural changes. */
+  function refreshShop() {
+    for (const el of $('taskList').children) {
+      const go = el.querySelector('[data-task]');
+      if (!go) continue;
+      const k = go.dataset.task;
+      const have = S.tp[k] | 0, need = taskNeed(k), ok = have >= need;
+      const bar = el.querySelector('.bar i'), lab = el.querySelector('.bar b');
+      if (bar) bar.style.width = Math.min(100, 100 * have / need).toFixed(0) + '%';
+      if (lab) lab.textContent = Math.min(have, need) + ' / ' + need;
+      const v = go.querySelector('.v');
+      if (v) {
+        const txt = ok ? 'CLAIM' : fmt(taskReward(k));
+        if (v.textContent !== txt) v.textContent = txt;
+      }
+      go.classList.toggle('claim', ok);
+      go.classList.toggle('dim', !ok);
+      const img = go.querySelector('img');
+      if (img) img.style.display = ok ? 'none' : '';
+    }
+    for (const el of $('upList').children) {
+      const go = el.querySelector('[data-up]');
+      if (!go) continue;
+      go.classList.toggle('dim', S.coins < upCost(go.dataset.up));
+    }
   }
 
   /* ---------------- collection ---------------- */
@@ -1463,23 +1592,42 @@
   }
 
   /* ---------------- the frame ---------------- */
+  /* Writing a text node that has not changed still dirties layout, and reading
+     offsetHeight right afterwards forces a synchronous reflow. At 10Hz that was
+     most of the frame budget for a game that is otherwise nearly idle. */
+  const shown = {};
+  function put(id, text) {
+    if (shown[id] === text) return;
+    shown[id] = text;
+    $(id).textContent = text;
+  }
+
+  let tutAt = 0;
   function paint() {
-    $('coins').textContent = fmt(S.coins);
+    put('coins', fmt(S.coins));
     paintForges();
     paintBoost();
     paintEvent();
-    fitTop();
-    $('rate').textContent = '+' + fmtRate(totalRate()) + '/s';
-    $('act').textContent = 'REBIRTH ' + S.rb;
+    put('rate', '+' + fmtRate(totalRate()) + '/s');
+    put('act', 'REBIRTH ' + S.rb);
     $('buySlot').classList.toggle('dim', S.coins < slotCost());
-    $('slotPx').textContent = fmt(slotCost());
+    put('slotPx', fmt(slotCost()));
     const lk = $('lockSlot');
-    if (lk) lk.querySelector('.px').textContent = fmt(slotCost());
+    if (lk) {
+      const px = lk.querySelector('.px'), t = fmt(slotCost());
+      if (px && px.textContent !== t) px.textContent = t;
+    }
     $('badgeRb').classList.toggle('hidden', !canRebirth());
     $('badgeShop').classList.toggle('hidden', !anyClaim());
-    if ($('shop').classList.contains('on')) drawShop();
-    if ($('rb').classList.contains('on')) drawRb();
-    drawTut();
+    // refresh, NOT rebuild: drawShop() here replaced the row under the cursor
+    // ten times a second, which ate clicks and made hover flicker
+    if ($('shop').classList.contains('on')) refreshShop();
+    // drawRb() rebuilds the reward reel; refreshing keeps the REBIRTH button
+    // pressable and the reel from restarting its pan every frame
+    if ($('rb').classList.contains('on')) refreshRb();
+    // the ring only needs 4Hz, and nothing at all once the tutorial is done
+    const now = performance.now();
+    if (S.tut < TUT.length && now - tutAt > 250) { tutAt = now; drawTut(); }
   }
 
   /* The boost pill doubles as the timer, so there is no separate countdown to
@@ -1487,7 +1635,9 @@
   function paintBoost() {
     const el = $('boost');
     const on = boostOn();
+    const was = el.classList.contains('on');
     el.classList.toggle('on', on);
+    if (was !== on) fitTop();
     if (on) {
       const left = Math.ceil((S.boost - Date.now()) / 1000);
       $('boostT').textContent = 'x' + B.boostMult + '  ' +
@@ -1534,6 +1684,7 @@
 
   function onDown(ev) {
     loadClips();                       // needs a gesture; this is the earliest
+    musicStart();                      // same reason: no context before a gesture
     const t = ev.target;
     if (!t.closest) return;
 
@@ -1820,11 +1971,13 @@
       try {
         window.ytgame.system.onPause(() => {
           flushSave();
+          musicStop();
           if (actx && actx.state === 'running') actx.suspend();
         });
         window.ytgame.system.onResume(() => {
           lastT = 0;                     // do not bank the paused wall-clock twice
           if (actx && actx.state === 'suspended') actx.resume();
+          musicStart();
         });
       } catch (e) {}
     }
