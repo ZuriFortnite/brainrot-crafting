@@ -15,7 +15,7 @@ different ones fuse into a mutant. **Rebirth** trades your plot and purse for a
 permanent income multiplier, an extra crafting table, and the next tier of
 ingredients.
 
-- **33 characters** to discover, the last of them behind the final rebirth
+- **53 characters** to discover, the last of them behind the final rebirth
 - **Shapeless recipes** — what's on the table matters, not where it sits
 - **Recipes are semantic**, so they can be reasoned about rather than brute
   forced: banana + monkey makes the banana monkey
@@ -30,8 +30,8 @@ ingredients.
 
 | | |
 |---|---|
-| Initial load | **~0.7 MB**, first frame under a second |
-| Total bundle | 4.6 MB |
+| Initial load | **289 KB** over 23 requests, first frame at 0.8 s |
+| Total bundle | 6.0 MB across 143 files |
 | Network | One request — the Playables SDK. Everything else is local. |
 | Aspect ratios | 9:32 through 32:9 |
 | Saves | Playables SDK when hosted on YouTube, `localStorage` otherwise |
@@ -49,9 +49,10 @@ index.html          the game
 src/plot.js         all of it — state, render, audio, SDK
 assets/craft.json   every balance number, generated (see below)
 assets/ing/         52 ingredient icons
-assets/set0..2/     33 characters
+assets/set0..3/     53 characters
 assets/sfx/         12 clips, Kenney (CC0)
 assets/icon/        UI icons
+check.js            asset-integrity guard, run before pushing
 ```
 
 ## Running it
