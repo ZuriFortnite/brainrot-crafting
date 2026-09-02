@@ -321,7 +321,17 @@
   /* Never crafted before. Worth calling out loudly: discovery is the point of a
      crafting game, and the result tile is the one moment you can see what a
      combination makes BEFORE paying for it. */
-  #res .new{position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  /* Centred with the box model, NOT translateX(-50%): the pulse below animates
+     transform too, and the animation wins - the badge lost its centring the
+     moment it started pulsing, sat with its left edge on the tile's midpoint
+     and ran off under the table, where the "!" was clipped away. The same
+     collision cost us a hover flicker once already.
+
+     It also sits INSIDE the tile rather than above it. Poking out of the top
+     put it outside the hole the tutorial cuts around the result, so the overlay
+     dimmed the one badge a first-time player most needs to notice. */
+  #res .new{position:absolute;bottom:4px;left:0;right:0;margin:0 auto;
+    width:max-content;
     font-size:13px;line-height:1;white-space:nowrap;color:#3a2408;
     background:linear-gradient(180deg,#fff08a,#f6c333);
     border:3px solid var(--line);border-radius:9px;padding:3px 7px;
@@ -938,7 +948,7 @@
   </div>
 </div>
 
-<script src="src/plot.js?v=p54"></script>
+<script src="src/plot.js?v=p55"></script>
 <script>PLOT.boot();</script>
 </body>
 </html>

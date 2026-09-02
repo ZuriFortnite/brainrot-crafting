@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p54';
+  const VER = 'p55';
 
   const P = {};
   window.PLOT = P;
