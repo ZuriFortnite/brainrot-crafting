@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p47';
+  const VER = 'p48';
 
   const P = {};
   window.PLOT = P;
@@ -509,13 +509,15 @@
   function iconOf(it) {
     return it.kind === 'ing'
       ? '<img src="' + it.icon + '" alt="" draggable="false">'
-      : '<img src="assets/' + it.set + '/tier' + it.tier +
-        '.png" alt="" draggable="false">';
+      : '<img src="' + it.art + '" alt="" draggable="false">';
   }
 
+  /* A mutant stores the ITEM ID of the parent whose sprite it wears, in its own
+     `art` field; an item's `art` is the path. Same word, two levels - the save
+     format predates the path field and renaming it would strand every mutant
+     already standing on a plot. */
   function artOf(e) {
-    const it = D.items[e.k === 'mut' ? e.art : e.id];
-    return 'assets/' + it.set + '/tier' + it.tier + '.png';
+    return D.items[e.k === 'mut' ? e.art : e.id].art;
   }
 
   /* Base rate, before the rebirth multiplier - stored rates stay comparable
@@ -924,8 +926,7 @@
     const it = D.items[out];
     res.className = 'ready';
     res.dataset.out = out;
-    res.innerHTML = '<img src="assets/' + it.set + '/tier' + it.tier +
-      '.png" alt="">';
+    res.innerHTML = '<img src="' + it.art + '" alt="">';
   }
 
   /* Which items could still lead somewhere from here. null means "everything".
@@ -1096,8 +1097,8 @@
       el.dataset.forge = i;
       if (j) {
         const it = D.items[j.out];
-        el.innerHTML = '<img src="assets/' + it.set + '/tier' + it.tier +
-          '.png" alt=""><div class="fill"></div><div class="t"></div>' +
+        el.innerHTML = '<img src="' + it.art + '" alt="">' +
+          '<div class="fill"></div><div class="t"></div>' +
           '<div class="tv"><img src="assets/icon/clapboard.png" alt=""></div>';
       }
       host.appendChild(el);
@@ -1404,8 +1405,8 @@
       const el = document.createElement('div');
       el.className = 'dcell' + (got ? '' : ' lock');
       el.dataset.id = id;
-      el.innerHTML = '<img loading="lazy" src="assets/' + it.set + '/tier' +
-        it.tier + '.png" alt="" draggable="false">' +
+      el.innerHTML = '<img loading="lazy" src="' + it.art +
+        '" alt="" draggable="false">' +
         '<div class="rc">' + (got ? recipeText(id) : '?') + '</div>' +
         '<div class="act"><img src="assets/icon/rebirth.png" alt="">' +
         it.band + '</div>';
@@ -1487,7 +1488,7 @@
   /* ---------------- the discovery moment ---------------- */
   function reveal(id) {
     const it = D.items[id];
-    $('revImg').src = 'assets/' + it.set + '/tier' + it.tier + '.png';
+    $('revImg').src = it.art;
     $('revRate').textContent = '+' + fmtRate(it.rate * mult()) + ' / sec';
     $('reveal').classList.add('on');
     drawTut();

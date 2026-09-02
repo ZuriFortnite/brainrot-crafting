@@ -29,16 +29,16 @@
    "kind": "ing",
    "name": "Cat",
    "icon": "assets/ing/03.png",
-   "cost": 24,
-   "tier": 1
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 4,
    "kind": "ing",
    "name": "Tire",
    "icon": "assets/ing/04.png",
-   "cost": 48,
-   "tier": 2
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 5,
@@ -53,16 +53,16 @@
    "kind": "ing",
    "name": "Banana",
    "icon": "assets/ing/06.png",
-   "cost": 96,
-   "tier": 3
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 7,
    "kind": "ing",
    "name": "Monkey",
    "icon": "assets/ing/07.png",
-   "cost": 96,
-   "tier": 3
+   "cost": 48,
+   "tier": 2
   },
   {
    "id": 8,
@@ -77,8 +77,8 @@
    "kind": "ing",
    "name": "Camel",
    "icon": "assets/ing/09.png",
-   "cost": 384,
-   "tier": 5
+   "cost": 24,
+   "tier": 1
   },
   {
    "id": 10,
@@ -101,16 +101,16 @@
    "kind": "ing",
    "name": "Sneaker",
    "icon": "assets/ing/12.png",
-   "cost": 1536,
-   "tier": 7
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 13,
    "kind": "ing",
    "name": "Shark",
    "icon": "assets/ing/13.png",
-   "cost": 1536,
-   "tier": 7
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 14,
@@ -125,16 +125,16 @@
    "kind": "ing",
    "name": "Elephant",
    "icon": "assets/ing/15.png",
-   "cost": 3072,
-   "tier": 8
+   "cost": 192,
+   "tier": 4
   },
   {
    "id": 16,
    "kind": "ing",
    "name": "Croc",
    "icon": "assets/ing/16.png",
-   "cost": 768,
-   "tier": 6
+   "cost": 96,
+   "tier": 3
   },
   {
    "id": 17,
@@ -173,16 +173,16 @@
    "kind": "ing",
    "name": "Berry",
    "icon": "assets/ing/21.png",
-   "cost": 192,
-   "tier": 4
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 22,
    "kind": "ing",
    "name": "Straw",
    "icon": "assets/ing/22.png",
-   "cost": 384,
-   "tier": 5
+   "cost": 24,
+   "tier": 1
   },
   {
    "id": 23,
@@ -205,16 +205,16 @@
    "kind": "ing",
    "name": "Leaf",
    "icon": "assets/ing/25.png",
-   "cost": 3072,
-   "tier": 8
+   "cost": 48,
+   "tier": 2
   },
   {
    "id": 26,
    "kind": "ing",
    "name": "Ballerina",
    "icon": "assets/ing/26.png",
-   "cost": 48,
-   "tier": 2
+   "cost": 24,
+   "tier": 1
   },
   {
    "id": 27,
@@ -237,16 +237,16 @@
    "kind": "ing",
    "name": "Melon",
    "icon": "assets/ing/29.png",
-   "cost": 768,
-   "tier": 6
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 30,
    "kind": "ing",
    "name": "Bomb",
    "icon": "assets/ing/30.png",
-   "cost": 6144,
-   "tier": 9
+   "cost": 384,
+   "tier": 5
   },
   {
    "id": 31,
@@ -261,8 +261,8 @@
    "kind": "ing",
    "name": "Penguin",
    "icon": "assets/ing/32.png",
-   "cost": 24,
-   "tier": 1
+   "cost": 12,
+   "tier": 0
   },
   {
    "id": 33,
@@ -293,24 +293,24 @@
    "kind": "ing",
    "name": "Orange",
    "icon": "assets/ing/36.png",
-   "cost": 3072,
-   "tier": 8
+   "cost": 24,
+   "tier": 1
   },
   {
    "id": 37,
    "kind": "ing",
    "name": "Muscle",
    "icon": "assets/ing/37.png",
-   "cost": 3072,
-   "tier": 8
+   "cost": 96,
+   "tier": 3
   },
   {
    "id": 38,
    "kind": "ing",
    "name": "King",
    "icon": "assets/ing/38.png",
-   "cost": 12288,
-   "tier": 10
+   "cost": 384,
+   "tier": 5
   },
   {
    "id": 39,
@@ -365,8 +365,8 @@
    "kind": "ing",
    "name": "Rodent",
    "icon": "assets/ing/45.png",
-   "cost": 192,
-   "tier": 4
+   "cost": 48,
+   "tier": 2
   },
   {
    "id": 46,
@@ -422,6 +422,7 @@
    "name": "Ninja Cup",
    "set": "set0",
    "tier": 0,
+   "art": "assets/set0/tier0.png",
    "rate": 0.6,
    "band": 0
   },
@@ -431,6 +432,7 @@
    "name": "Goldfish Cat",
    "set": "set0",
    "tier": 1,
+   "art": "assets/set0/tier1.png",
    "rate": 1.2,
    "band": 0
   },
@@ -440,6 +442,7 @@
    "name": "Tire Frog",
    "set": "set0",
    "tier": 2,
+   "art": "assets/set0/tier2.png",
    "rate": 2.4,
    "band": 0
   },
@@ -449,6 +452,7 @@
    "name": "Banana Monkey",
    "set": "set0",
    "tier": 3,
+   "art": "assets/set0/tier3.png",
    "rate": 4.8,
    "band": 1
   },
@@ -458,6 +462,7 @@
    "name": "Capybara",
    "set": "set0",
    "tier": 4,
+   "art": "assets/set0/tier4.png",
    "rate": 9.6,
    "band": 1
   },
@@ -467,6 +472,7 @@
    "name": "Fridge Camel",
    "set": "set0",
    "tier": 5,
+   "art": "assets/set0/tier5.png",
    "rate": 19.2,
    "band": 2
   },
@@ -476,6 +482,7 @@
    "name": "Saturn Cow",
    "set": "set0",
    "tier": 6,
+   "art": "assets/set0/tier6.png",
    "rate": 38.4,
    "band": 2
   },
@@ -485,8 +492,9 @@
    "name": "Sneaker Shark",
    "set": "set0",
    "tier": 7,
+   "art": "assets/set0/tier7.png",
    "rate": 76.8,
-   "band": 3
+   "band": 1
   },
   {
    "id": 60,
@@ -494,8 +502,9 @@
    "name": "Cactus Elephant",
    "set": "set0",
    "tier": 8,
+   "art": "assets/set0/tier8.png",
    "rate": 153.6,
-   "band": 3
+   "band": 1
   },
   {
    "id": 61,
@@ -503,6 +512,7 @@
    "name": "Croco Plane",
    "set": "set0",
    "tier": 9,
+   "art": "assets/set0/tier9.png",
    "rate": 307.2,
    "band": 4
   },
@@ -512,6 +522,7 @@
    "name": "Mega Stack",
    "set": "set0",
    "tier": 10,
+   "art": "assets/set0/tier10.png",
    "rate": 614.4,
    "band": 5
   },
@@ -521,6 +532,7 @@
    "name": "Seagull",
    "set": "set1",
    "tier": 0,
+   "art": "assets/set1/tier0.png",
    "rate": 0.84,
    "band": 0
   },
@@ -530,6 +542,7 @@
    "name": "Fish Cat",
    "set": "set1",
    "tier": 1,
+   "art": "assets/set1/tier1.png",
    "rate": 1.68,
    "band": 0
   },
@@ -539,6 +552,7 @@
    "name": "Crow Lady",
    "set": "set1",
    "tier": 2,
+   "art": "assets/set1/tier2.png",
    "rate": 3.36,
    "band": 0
   },
@@ -548,6 +562,7 @@
    "name": "Teapot Bot",
    "set": "set1",
    "tier": 3,
+   "art": "assets/set1/tier3.png",
    "rate": 6.72,
    "band": 1
   },
@@ -557,6 +572,7 @@
    "name": "Cactus Berry",
    "set": "set1",
    "tier": 4,
+   "art": "assets/set1/tier4.png",
    "rate": 13.4,
    "band": 1
   },
@@ -566,8 +582,9 @@
    "name": "Straw Frog",
    "set": "set1",
    "tier": 5,
+   "art": "assets/set1/tier5.png",
    "rate": 26.9,
-   "band": 2
+   "band": 1
   },
   {
    "id": 69,
@@ -575,6 +592,7 @@
    "name": "Belly Fish",
    "set": "set1",
    "tier": 6,
+   "art": "assets/set1/tier6.png",
    "rate": 53.8,
    "band": 2
   },
@@ -584,6 +602,7 @@
    "name": "Horse Bench",
    "set": "set1",
    "tier": 7,
+   "art": "assets/set1/tier7.png",
    "rate": 107.5,
    "band": 3
   },
@@ -593,8 +612,9 @@
    "name": "Leaf Croc",
    "set": "set1",
    "tier": 8,
+   "art": "assets/set1/tier8.png",
    "rate": 215.0,
-   "band": 3
+   "band": 1
   },
   {
    "id": 72,
@@ -602,6 +622,7 @@
    "name": "Mammoth",
    "set": "set1",
    "tier": 9,
+   "art": "assets/set1/tier9.png",
    "rate": 430.1,
    "band": 3
   },
@@ -611,6 +632,7 @@
    "name": "Bird King",
    "set": "set1",
    "tier": 10,
+   "art": "assets/set1/tier10.png",
    "rate": 860.2,
    "band": 5
   },
@@ -620,6 +642,7 @@
    "name": "Blue Octo",
    "set": "set2",
    "tier": 0,
+   "art": "assets/set2/tier0.png",
    "rate": 1.08,
    "band": 0
   },
@@ -629,6 +652,7 @@
    "name": "Cool Penguin",
    "set": "set2",
    "tier": 1,
+   "art": "assets/set2/tier1.png",
    "rate": 2.16,
    "band": 0
   },
@@ -638,6 +662,7 @@
    "name": "Ballerina Cup",
    "set": "set2",
    "tier": 2,
+   "art": "assets/set2/tier2.png",
    "rate": 4.32,
    "band": 0
   },
@@ -647,6 +672,7 @@
    "name": "Camera Blob",
    "set": "set2",
    "tier": 3,
+   "art": "assets/set2/tier3.png",
    "rate": 8.64,
    "band": 1
   },
@@ -656,6 +682,7 @@
    "name": "Coat Capy",
    "set": "set2",
    "tier": 4,
+   "art": "assets/set2/tier4.png",
    "rate": 17.3,
    "band": 1
   },
@@ -665,6 +692,7 @@
    "name": "Earth Cow",
    "set": "set2",
    "tier": 5,
+   "art": "assets/set2/tier5.png",
    "rate": 34.6,
    "band": 2
   },
@@ -674,8 +702,9 @@
    "name": "Melon Croc",
    "set": "set2",
    "tier": 6,
+   "art": "assets/set2/tier6.png",
    "rate": 69.1,
-   "band": 2
+   "band": 1
   },
   {
    "id": 81,
@@ -683,6 +712,7 @@
    "name": "Spy Bear",
    "set": "set2",
    "tier": 7,
+   "art": "assets/set2/tier7.png",
    "rate": 138.2,
    "band": 3
   },
@@ -692,8 +722,9 @@
    "name": "Swole Orange",
    "set": "set2",
    "tier": 8,
+   "art": "assets/set2/tier8.png",
    "rate": 276.5,
-   "band": 3
+   "band": 2
   },
   {
    "id": 83,
@@ -701,6 +732,7 @@
    "name": "Bomb Pig",
    "set": "set2",
    "tier": 9,
+   "art": "assets/set2/tier9.png",
    "rate": 553.0,
    "band": 4
   },
@@ -710,8 +742,209 @@
    "name": "Tourist Boss",
    "set": "set2",
    "tier": 10,
+   "art": "assets/set2/tier10.png",
    "rate": 1105.9,
    "band": 5
+  },
+  {
+   "id": 85,
+   "kind": "br",
+   "name": "Melon Tiger",
+   "set": "set3",
+   "tier": 0,
+   "art": "assets/set3/tier0.png",
+   "rate": 1.32,
+   "band": 0
+  },
+  {
+   "id": 86,
+   "kind": "br",
+   "name": "Sushi Penguin",
+   "set": "set3",
+   "tier": 1,
+   "art": "assets/set3/tier1.png",
+   "rate": 2.64,
+   "band": 0
+  },
+  {
+   "id": 87,
+   "kind": "br",
+   "name": "Leaf Ape",
+   "set": "set3",
+   "tier": 2,
+   "art": "assets/set3/tier2.png",
+   "rate": 5.28,
+   "band": 0
+  },
+  {
+   "id": 88,
+   "kind": "br",
+   "name": "Swole Beak",
+   "set": "set3",
+   "tier": 3,
+   "art": "assets/set3/tier3.png",
+   "rate": 10.6,
+   "band": 1
+  },
+  {
+   "id": 89,
+   "kind": "br",
+   "name": "Banana Tractor",
+   "set": "set3",
+   "tier": 0,
+   "art": "assets/set3/tier4.png",
+   "rate": 1.32,
+   "band": 0
+  },
+  {
+   "id": 90,
+   "kind": "br",
+   "name": "Shake Ballerina",
+   "set": "set3",
+   "tier": 1,
+   "art": "assets/set3/tier5.png",
+   "rate": 2.64,
+   "band": 0
+  },
+  {
+   "id": 91,
+   "kind": "br",
+   "name": "Cactus Rhino",
+   "set": "set3",
+   "tier": 4,
+   "art": "assets/set3/tier6.png",
+   "rate": 21.1,
+   "band": 1
+  },
+  {
+   "id": 92,
+   "kind": "br",
+   "name": "Mega Mash",
+   "set": "set3",
+   "tier": 9,
+   "art": "assets/set3/tier7.png",
+   "rate": 675.8,
+   "band": 5
+  },
+  {
+   "id": 93,
+   "kind": "br",
+   "name": "Kiwi Rascal",
+   "set": "set3",
+   "tier": 2,
+   "art": "assets/set3/tier8.png",
+   "rate": 5.28,
+   "band": 0
+  },
+  {
+   "id": 94,
+   "kind": "br",
+   "name": "Berry Penguin",
+   "set": "set3",
+   "tier": 0,
+   "art": "assets/set3/tier9.png",
+   "rate": 1.32,
+   "band": 0
+  },
+  {
+   "id": 95,
+   "kind": "br",
+   "name": "Match Head",
+   "set": "set3",
+   "tier": 5,
+   "art": "assets/set3/tier10.png",
+   "rate": 42.2,
+   "band": 2
+  },
+  {
+   "id": 96,
+   "kind": "br",
+   "name": "Orange Chick",
+   "set": "set3",
+   "tier": 1,
+   "art": "assets/set3/tier11.png",
+   "rate": 2.64,
+   "band": 0
+  },
+  {
+   "id": 97,
+   "kind": "br",
+   "name": "Leaf Platypus",
+   "set": "set3",
+   "tier": 3,
+   "art": "assets/set3/tier12.png",
+   "rate": 10.6,
+   "band": 1
+  },
+  {
+   "id": 98,
+   "kind": "br",
+   "name": "Track Ape",
+   "set": "set3",
+   "tier": 6,
+   "art": "assets/set3/tier13.png",
+   "rate": 84.5,
+   "band": 5
+  },
+  {
+   "id": 99,
+   "kind": "br",
+   "name": "Melon Pigeon",
+   "set": "set3",
+   "tier": 2,
+   "art": "assets/set3/tier14.png",
+   "rate": 5.28,
+   "band": 0
+  },
+  {
+   "id": 100,
+   "kind": "br",
+   "name": "Swole Leaf",
+   "set": "set3",
+   "tier": 4,
+   "art": "assets/set3/tier15.png",
+   "rate": 21.1,
+   "band": 1
+  },
+  {
+   "id": 101,
+   "kind": "br",
+   "name": "Sneaker Orca",
+   "set": "set3",
+   "tier": 0,
+   "art": "assets/set3/tier16.png",
+   "rate": 1.32,
+   "band": 0
+  },
+  {
+   "id": 102,
+   "kind": "br",
+   "name": "Tank Ostrich",
+   "set": "set3",
+   "tier": 7,
+   "art": "assets/set3/tier17.png",
+   "rate": 169.0,
+   "band": 2
+  },
+  {
+   "id": 103,
+   "kind": "br",
+   "name": "Camel Car",
+   "set": "set3",
+   "tier": 1,
+   "art": "assets/set3/tier18.png",
+   "rate": 2.64,
+   "band": 0
+  },
+  {
+   "id": 104,
+   "kind": "br",
+   "name": "Bone Signal",
+   "set": "set3",
+   "tier": 5,
+   "art": "assets/set3/tier19.png",
+   "rate": 42.2,
+   "band": 3
   }
  ],
  "ingredients": [
@@ -801,7 +1034,27 @@
   81,
   82,
   83,
-  84
+  84,
+  85,
+  86,
+  87,
+  88,
+  89,
+  90,
+  91,
+  92,
+  93,
+  94,
+  95,
+  96,
+  97,
+  98,
+  99,
+  100,
+  101,
+  102,
+  103,
+  104
  ],
  "recipes": {
   "0*1,1*1": 52,
@@ -836,7 +1089,27 @@
   "27*1,33*1,34*1,35*1": 81,
   "21*1,36*1,37*1,49*1": 82,
   "8*1,30*1,31*1,37*1,49*1": 83,
-  "17*1,27*1,38*1,43*1,50*1": 84
+  "17*1,27*1,38*1,43*1,50*1": 84,
+  "3*1,29*1": 85,
+  "2*1,32*1": 86,
+  "7*1,25*1": 87,
+  "18*1,36*1,37*1": 88,
+  "4*1,6*1": 89,
+  "22*1,26*1": 90,
+  "12*1,14*1,15*1": 91,
+  "2*1,3*1,4*1,15*1,50*1": 92,
+  "21*1,45*1": 93,
+  "21*1,32*1": 94,
+  "12*1,28*1,38*1": 95,
+  "18*1,36*1": 96,
+  "16*1,25*1,44*1": 97,
+  "7*1,33*1,38*1,50*1": 98,
+  "18*1,29*1": 99,
+  "18*1,25*1,37*1": 100,
+  "12*1,13*1": 101,
+  "18*1,20*1,30*1,37*1": 102,
+  "4*1,9*1": 103,
+  "27*1,30*1,34*1": 104
  },
  "madeBy": {
   "52": [
@@ -1348,6 +1621,258 @@
     50,
     1
    ]
+  ],
+  "85": [
+   [
+    3,
+    1
+   ],
+   [
+    29,
+    1
+   ]
+  ],
+  "86": [
+   [
+    2,
+    1
+   ],
+   [
+    32,
+    1
+   ]
+  ],
+  "87": [
+   [
+    7,
+    1
+   ],
+   [
+    25,
+    1
+   ]
+  ],
+  "88": [
+   [
+    18,
+    1
+   ],
+   [
+    36,
+    1
+   ],
+   [
+    37,
+    1
+   ]
+  ],
+  "89": [
+   [
+    4,
+    1
+   ],
+   [
+    6,
+    1
+   ]
+  ],
+  "90": [
+   [
+    22,
+    1
+   ],
+   [
+    26,
+    1
+   ]
+  ],
+  "91": [
+   [
+    12,
+    1
+   ],
+   [
+    14,
+    1
+   ],
+   [
+    15,
+    1
+   ]
+  ],
+  "92": [
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    15,
+    1
+   ],
+   [
+    50,
+    1
+   ]
+  ],
+  "93": [
+   [
+    21,
+    1
+   ],
+   [
+    45,
+    1
+   ]
+  ],
+  "94": [
+   [
+    21,
+    1
+   ],
+   [
+    32,
+    1
+   ]
+  ],
+  "95": [
+   [
+    12,
+    1
+   ],
+   [
+    28,
+    1
+   ],
+   [
+    38,
+    1
+   ]
+  ],
+  "96": [
+   [
+    18,
+    1
+   ],
+   [
+    36,
+    1
+   ]
+  ],
+  "97": [
+   [
+    16,
+    1
+   ],
+   [
+    25,
+    1
+   ],
+   [
+    44,
+    1
+   ]
+  ],
+  "98": [
+   [
+    7,
+    1
+   ],
+   [
+    33,
+    1
+   ],
+   [
+    38,
+    1
+   ],
+   [
+    50,
+    1
+   ]
+  ],
+  "99": [
+   [
+    18,
+    1
+   ],
+   [
+    29,
+    1
+   ]
+  ],
+  "100": [
+   [
+    18,
+    1
+   ],
+   [
+    25,
+    1
+   ],
+   [
+    37,
+    1
+   ]
+  ],
+  "101": [
+   [
+    12,
+    1
+   ],
+   [
+    13,
+    1
+   ]
+  ],
+  "102": [
+   [
+    18,
+    1
+   ],
+   [
+    20,
+    1
+   ],
+   [
+    30,
+    1
+   ],
+   [
+    37,
+    1
+   ]
+  ],
+  "103": [
+   [
+    4,
+    1
+   ],
+   [
+    9,
+    1
+   ]
+  ],
+  "104": [
+   [
+    27,
+    1
+   ],
+   [
+    30,
+    1
+   ],
+   [
+    34,
+    1
+   ]
   ]
  },
  "rebirth": [
@@ -1363,35 +1888,35 @@
    "mult": 3.0,
    "tables": 2,
    "ads": 10,
-   "need": 25200
+   "need": 43000
   },
   {
    "ing": 6,
    "mult": 12.0,
    "tables": 3,
    "ads": 20,
-   "need": 169000000
+   "need": 17000000
   },
   {
    "ing": 8,
    "mult": 60.0,
    "tables": 4,
    "ads": 35,
-   "need": 4040000000
+   "need": 252000000
   },
   {
    "ing": 9,
    "mult": 400.0,
    "tables": 6,
    "ads": 55,
-   "need": 77300000000
+   "need": 667000000000
   },
   {
    "ing": 10,
    "mult": 3000.0,
    "tables": 8,
    "ads": 80,
-   "need": 24900000000000
+   "need": 41200000000000
   }
  ],
  "start": {

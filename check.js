@@ -40,7 +40,7 @@ const d = JSON.parse(fs.readFileSync(path.join(root, 'assets/craft.json'), 'utf8
 const dyn = new Set();
 for (const it of d.items) {
   if (it.icon) dyn.add(it.icon);
-  if (it.kind === 'br') dyn.add(`assets/${it.set}/tier${it.tier}.png`);
+  if (it.kind === 'br') dyn.add(it.art);   // tier no longer names the file
 }
 for (const u of d.upgrades) dyn.add(`assets/icon/${u.icon}.png`);
 for (const t of d.tasks) dyn.add(`assets/icon/${t.icon}.png`);
