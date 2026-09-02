@@ -282,6 +282,11 @@
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 8px 0 var(--line);cursor:default}
   #res img{width:88%;height:88%;object-fit:contain}
+  /* part-way there: still not craftable, but visibly PROGRESSING rather than
+     wrong - the difference the ? could not express */
+  #res.part{background:#a8813f}
+  #res.part .q{color:#fff;font-size:calc(var(--cell) * .5);
+    -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
   #res.ready{background:#63c257;cursor:pointer;animation:ready 1s ease-in-out infinite}
   @keyframes ready{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
   #res .q{font-size:calc(var(--cell) * .8);color:rgba(255,255,255,.42)}
@@ -860,7 +865,7 @@
   </div>
 </div>
 
-<script src="src/plot.js?v=p48"></script>
+<script src="src/plot.js?v=p49"></script>
 <script>PLOT.boot();</script>
 </body>
 </html>

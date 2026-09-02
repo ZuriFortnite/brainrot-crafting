@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p48';
+  const VER = 'p49';
 
   const P = {};
   window.PLOT = P;
@@ -914,12 +914,37 @@
     return e.map(p => p[0] + '*' + p[1]).join(',');
   }
 
+  /* How far along the shortest recipe the table could still complete. Without
+     this the slot showed "?" whether you were one ingredient short or had
+     something nonsensical, so a half-built four-ingredient recipe looked
+     exactly like a mistake - and since the filter keeps the right ingredients
+     lit, players placed what was lit and then wondered why nothing crafted. */
+  function partial() {
+    const have = {};
+    let n = 0;
+    for (const g of grid) if (g) { have[g.id] = (have[g.id] || 0) + 1; n++; }
+    if (!n) return null;
+    let best = null;
+    for (const r of RECIPES) {
+      if (r.total <= n) continue;
+      let ok = true;
+      for (const id in have) {
+        if (!(r.need[id] >= have[id])) { ok = false; break; }
+      }
+      if (ok && (best === null || r.total < best)) best = r.total;
+    }
+    return best === null ? null : { at: n, of: best };
+  }
+
   function drawResult() {
     const res = $('res');
     const out = D.recipes[gridKey()];
     if (out === undefined) {
-      res.className = '';
-      res.innerHTML = '<span class="q">?</span>';
+      const p = partial();
+      res.className = p ? 'part' : '';
+      res.innerHTML = p
+        ? '<span class="q">' + p.at + '/' + p.of + '</span>'
+        : '<span class="q">?</span>';
       res.dataset.out = '';
       return;
     }
