@@ -307,7 +307,7 @@
      system font was around and never matched the rest of the art */
   #arrow{width:34px;height:34px;flex:none;object-fit:contain;
     filter:drop-shadow(0 3px 0 rgba(75,42,20,.3))}
-  #res{width:calc(var(--cell) * 1.7);height:calc(var(--cell) * 1.7);
+  #res{position:relative;width:calc(var(--cell) * 1.7);height:calc(var(--cell) * 1.7);
     border-radius:18px;background:#8d6647;border:5px solid var(--line);
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 8px 0 var(--line);cursor:default}
@@ -318,34 +318,60 @@
   #res.part .q{color:#fff;font-size:calc(var(--cell) * .5);
     -webkit-text-stroke:6px var(--line);paint-order:stroke fill}
   #res.ready{background:#63c257;cursor:pointer;animation:ready 1s ease-in-out infinite}
+  /* Never crafted before. Worth calling out loudly: discovery is the point of a
+     crafting game, and the result tile is the one moment you can see what a
+     combination makes BEFORE paying for it. */
+  #res .new{position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+    font-size:13px;line-height:1;white-space:nowrap;color:#3a2408;
+    background:linear-gradient(180deg,#fff08a,#f6c333);
+    border:3px solid var(--line);border-radius:9px;padding:3px 7px;
+    box-shadow:0 3px 0 var(--line);pointer-events:none;
+    animation:hotcard 1s ease-in-out infinite}
+  #res.fresh{background:#f0a83c}
+  .forge .nb{position:absolute;top:calc(var(--fw,56px) * -.13);
+    left:calc(var(--fw,56px) * -.13);
+    width:calc(var(--fw,56px) * .34);height:calc(var(--fw,56px) * .34);
+    border-radius:50%;background:linear-gradient(180deg,#fff08a,#f6c333);
+    border:3px solid var(--line);pointer-events:none}
   @keyframes ready{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
   #res .q{font-size:calc(var(--cell) * .8);color:rgba(255,255,255,.42)}
   @media (hover:hover){#res.ready:hover{filter:brightness(1.1)}}
   /* ---------------- the forges ----------------
      One tile per table. Each carries its own art, wipe, countdown and skip, so
      a skip is never ambiguous about which job it applies to. */
-  #forges{flex:none;display:flex;justify-content:center;flex-wrap:wrap;gap:12px;
-    padding:0 0 12px}
-  .forge{position:relative;width:56px;height:56px;border-radius:16px;
+  /* --fw and --fgap are measured in fitForges(). A rebirth adds a table, and
+     once the row wrapped, the second row came straight out of the ingredient
+     list underneath - at rebirth 4 that left two and a half rows to browse
+     fifty-two ingredients in. Tiles shrink to hold one row instead: a slightly
+     smaller forge costs nothing, a shorter list costs the whole screen.
+     wrap stays as a backstop for a viewport too narrow even for the floor. */
+  #forges{flex:none;display:flex;justify-content:center;flex-wrap:wrap;
+    gap:var(--fgap,12px);padding:0 0 12px}
+  .forge{position:relative;width:var(--fw,56px);height:var(--fw,56px);
+    border-radius:calc(var(--fw,56px) * .29);
     background:#8d6647;border:4px solid var(--line);
     box-shadow:0 5px 0 var(--line);display:flex;align-items:center;
     justify-content:center;overflow:visible}
   .forge.free{background:rgba(141,102,71,.35);border-style:dashed}
   .forge.lock{background:rgba(75,42,20,.3);flex-direction:column;gap:1px}
   .forge.lock img{width:42%;opacity:.95}
-  .forge.lock span{font-size:13px;color:#fff;-webkit-text-stroke:5px var(--line);
+  .forge.lock span{font-size:calc(var(--fw,56px) * .24);color:#fff;
+    -webkit-text-stroke:calc(var(--fw,56px) * .089) var(--line);
     paint-order:stroke fill}
   .forge.busy{cursor:pointer}
   .forge > img{width:88%;height:88%;object-fit:contain;opacity:.4}
   .forge .fill{position:absolute;inset:-2px;border-radius:12px;
     pointer-events:none;
     background:conic-gradient(rgba(255,212,94,.6) var(--p,0deg),transparent 0deg)}
-  .forge .t{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
-    text-align:center;font-size:16px;color:#fff;
-    -webkit-text-stroke:6px var(--line);paint-order:stroke fill;
-    pointer-events:none}
-  .forge .tv{position:absolute;right:-11px;bottom:-11px;width:30px;height:30px;
-    border-radius:11px;display:flex;align-items:center;justify-content:center;
+  .forge .t{position:absolute;left:0;right:0;top:42%;transform:translateY(-50%);
+    text-align:center;font-size:calc(var(--fw,56px) * .28);color:#fff;
+    -webkit-text-stroke:calc(var(--fw,56px) * .107) var(--line);
+    paint-order:stroke fill;pointer-events:none}
+  .forge .tv{position:absolute;right:calc(var(--fw,56px) * -.14);
+    bottom:calc(var(--fw,56px) * -.14);
+    width:calc(var(--fw,56px) * .46);height:calc(var(--fw,56px) * .46);
+    border-radius:calc(var(--fw,56px) * .17);
+    display:flex;align-items:center;justify-content:center;
     background:linear-gradient(180deg,#ffe07a,#e0a017);
     border:3px solid var(--line);box-shadow:0 3px 0 var(--line);
     animation:hotcard 1.2s ease-in-out infinite;pointer-events:none}
@@ -912,7 +938,7 @@
   </div>
 </div>
 
-<script src="src/plot.js?v=p53"></script>
+<script src="src/plot.js?v=p54"></script>
 <script>PLOT.boot();</script>
 </body>
 </html>

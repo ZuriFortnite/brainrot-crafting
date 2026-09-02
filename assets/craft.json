@@ -21,7 +21,7 @@
    "kind": "ing",
    "name": "Fish",
    "icon": "assets/ing/02.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {
@@ -45,7 +45,7 @@
    "kind": "ing",
    "name": "Frog",
    "icon": "assets/ing/05.png",
-   "cost": 48,
+   "cost": 72,
    "tier": 2
   },
   {
@@ -61,7 +61,7 @@
    "kind": "ing",
    "name": "Monkey",
    "icon": "assets/ing/07.png",
-   "cost": 48,
+   "cost": 72,
    "tier": 2
   },
   {
@@ -69,7 +69,7 @@
    "kind": "ing",
    "name": "Fridge",
    "icon": "assets/ing/08.png",
-   "cost": 384,
+   "cost": 501033,
    "tier": 5
   },
   {
@@ -77,7 +77,7 @@
    "kind": "ing",
    "name": "Camel",
    "icon": "assets/ing/09.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {
@@ -85,7 +85,7 @@
    "kind": "ing",
    "name": "Saturn",
    "icon": "assets/ing/10.png",
-   "cost": 768,
+   "cost": 1227531,
    "tier": 6
   },
   {
@@ -93,7 +93,7 @@
    "kind": "ing",
    "name": "Cow",
    "icon": "assets/ing/11.png",
-   "cost": 384,
+   "cost": 501033,
    "tier": 5
   },
   {
@@ -117,7 +117,7 @@
    "kind": "ing",
    "name": "Cactus",
    "icon": "assets/ing/14.png",
-   "cost": 192,
+   "cost": 56872,
    "tier": 4
   },
   {
@@ -125,7 +125,7 @@
    "kind": "ing",
    "name": "Elephant",
    "icon": "assets/ing/15.png",
-   "cost": 192,
+   "cost": 56872,
    "tier": 4
   },
   {
@@ -133,7 +133,7 @@
    "kind": "ing",
    "name": "Croc",
    "icon": "assets/ing/16.png",
-   "cost": 96,
+   "cost": 23213,
    "tier": 3
   },
   {
@@ -141,7 +141,7 @@
    "kind": "ing",
    "name": "Plane",
    "icon": "assets/ing/17.png",
-   "cost": 6144,
+   "cost": 145941099837,
    "tier": 9
   },
   {
@@ -157,7 +157,7 @@
    "kind": "ing",
    "name": "Teapot",
    "icon": "assets/ing/19.png",
-   "cost": 96,
+   "cost": 23213,
    "tier": 3
   },
   {
@@ -165,7 +165,7 @@
    "kind": "ing",
    "name": "Bot",
    "icon": "assets/ing/20.png",
-   "cost": 96,
+   "cost": 23213,
    "tier": 3
   },
   {
@@ -181,7 +181,7 @@
    "kind": "ing",
    "name": "Straw",
    "icon": "assets/ing/22.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {
@@ -189,7 +189,7 @@
    "kind": "ing",
    "name": "Bench",
    "icon": "assets/ing/23.png",
-   "cost": 1536,
+   "cost": 1273267576,
    "tier": 7
   },
   {
@@ -197,7 +197,7 @@
    "kind": "ing",
    "name": "Horse",
    "icon": "assets/ing/24.png",
-   "cost": 1536,
+   "cost": 1273267576,
    "tier": 7
   },
   {
@@ -205,7 +205,7 @@
    "kind": "ing",
    "name": "Leaf",
    "icon": "assets/ing/25.png",
-   "cost": 48,
+   "cost": 72,
    "tier": 2
   },
   {
@@ -213,7 +213,7 @@
    "kind": "ing",
    "name": "Ballerina",
    "icon": "assets/ing/26.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {
@@ -221,7 +221,7 @@
    "kind": "ing",
    "name": "Camera",
    "icon": "assets/ing/27.png",
-   "cost": 96,
+   "cost": 23213,
    "tier": 3
   },
   {
@@ -229,7 +229,7 @@
    "kind": "ing",
    "name": "Earth",
    "icon": "assets/ing/28.png",
-   "cost": 384,
+   "cost": 501033,
    "tier": 5
   },
   {
@@ -245,7 +245,7 @@
    "kind": "ing",
    "name": "Bomb",
    "icon": "assets/ing/30.png",
-   "cost": 384,
+   "cost": 501033,
    "tier": 5
   },
   {
@@ -253,7 +253,7 @@
    "kind": "ing",
    "name": "Pig",
    "icon": "assets/ing/31.png",
-   "cost": 6144,
+   "cost": 145941099837,
    "tier": 9
   },
   {
@@ -269,7 +269,7 @@
    "kind": "ing",
    "name": "Coat",
    "icon": "assets/ing/33.png",
-   "cost": 192,
+   "cost": 56872,
    "tier": 4
   },
   {
@@ -277,7 +277,7 @@
    "kind": "ing",
    "name": "Spy",
    "icon": "assets/ing/34.png",
-   "cost": 1536,
+   "cost": 1273267576,
    "tier": 7
   },
   {
@@ -285,7 +285,7 @@
    "kind": "ing",
    "name": "Bear",
    "icon": "assets/ing/35.png",
-   "cost": 1536,
+   "cost": 1273267576,
    "tier": 7
   },
   {
@@ -293,7 +293,7 @@
    "kind": "ing",
    "name": "Orange",
    "icon": "assets/ing/36.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {
@@ -301,7 +301,7 @@
    "kind": "ing",
    "name": "Muscle",
    "icon": "assets/ing/37.png",
-   "cost": 96,
+   "cost": 23213,
    "tier": 3
   },
   {
@@ -309,7 +309,7 @@
    "kind": "ing",
    "name": "King",
    "icon": "assets/ing/38.png",
-   "cost": 384,
+   "cost": 501033,
    "tier": 5
   },
   {
@@ -317,7 +317,7 @@
    "kind": "ing",
    "name": "Lady",
    "icon": "assets/ing/39.png",
-   "cost": 48,
+   "cost": 72,
    "tier": 2
   },
   {
@@ -325,7 +325,7 @@
    "kind": "ing",
    "name": "Jelly",
    "icon": "assets/ing/40.png",
-   "cost": 96,
+   "cost": 23213,
    "tier": 3
   },
   {
@@ -341,7 +341,7 @@
    "kind": "ing",
    "name": "Ice",
    "icon": "assets/ing/42.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {
@@ -349,7 +349,7 @@
    "kind": "ing",
    "name": "Tourist",
    "icon": "assets/ing/43.png",
-   "cost": 12288,
+   "cost": 9991086474447,
    "tier": 10
   },
   {
@@ -357,7 +357,7 @@
    "kind": "ing",
    "name": "Water",
    "icon": "assets/ing/44.png",
-   "cost": 192,
+   "cost": 56872,
    "tier": 4
   },
   {
@@ -365,7 +365,7 @@
    "kind": "ing",
    "name": "Rodent",
    "icon": "assets/ing/45.png",
-   "cost": 48,
+   "cost": 72,
    "tier": 2
   },
   {
@@ -381,7 +381,7 @@
    "kind": "ing",
    "name": "Crow",
    "icon": "assets/ing/47.png",
-   "cost": 48,
+   "cost": 72,
    "tier": 2
   },
   {
@@ -397,7 +397,7 @@
    "kind": "ing",
    "name": "Belly",
    "icon": "assets/ing/49.png",
-   "cost": 768,
+   "cost": 1227531,
    "tier": 6
   },
   {
@@ -405,7 +405,7 @@
    "kind": "ing",
    "name": "Boss",
    "icon": "assets/ing/50.png",
-   "cost": 12288,
+   "cost": 9991086474447,
    "tier": 10
   },
   {
@@ -413,7 +413,7 @@
    "kind": "ing",
    "name": "Goldfish",
    "icon": "assets/ing/51.png",
-   "cost": 24,
+   "cost": 29,
    "tier": 1
   },
   {

@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p53';
+  const VER = 'p54';
 
   const P = {};
   window.PLOT = P;
@@ -1073,9 +1073,11 @@
       return;
     }
     const it = D.items[out];
-    res.className = 'ready';
+    const fresh = !seen.has(out);
+    res.className = 'ready' + (fresh ? ' fresh' : '');
     res.dataset.out = out;
-    res.innerHTML = '<img src="' + it.art + '" alt="">';
+    res.innerHTML = '<img src="' + it.art + '" alt="">' +
+      (fresh ? '<span class="new">NEW!</span>' : '');
   }
 
   /* Which items could still lead somewhere from here. null means "everything".
@@ -1253,6 +1255,28 @@
     }
   }
 
+  /* Size the tiles so they hold ONE row. A rebirth adds a table; at rebirth 4
+     there are six plus the locked preview, which wrapped and took 68px straight
+     out of the ingredient list below - the list is the thing you actually browse,
+     so the forges give up the pixels instead. Floored, because past a point a
+     tile stops being tappable and wrapping is the lesser evil. */
+  function fitForges() {
+    const host = $('forges');
+    if (!host) return;
+    const n = host.children.length;
+    const w = host.clientWidth;
+    if (!n || !w) return;              // hidden view: measured again when shown
+    let gap = 12, fw = 56;
+    if (n * fw + (n - 1) * gap > w) {
+      gap = 6;
+      fw = Math.floor((w - gap * (n - 1)) / n);
+    }
+    fw = Math.max(34, Math.min(56, fw));
+    const r = document.documentElement.style;
+    r.setProperty('--fw', fw + 'px');
+    r.setProperty('--fgap', gap + 'px');
+  }
+
   function drawForges() {
     const host = $('forges');
     host.innerHTML = '';
@@ -1264,8 +1288,10 @@
       el.dataset.forge = i;
       if (j) {
         const it = D.items[j.out];
+        // a long craft is worth waiting out when what comes out is new
         el.innerHTML = '<img src="' + it.art + '" alt="">' +
           '<div class="fill"></div><div class="t"></div>' +
+          (seen.has(j.out) ? '' : '<div class="nb"></div>') +
           '<div class="tv"><img src="assets/icon/clapboard.png" alt=""></div>';
       }
       host.appendChild(el);
@@ -1278,6 +1304,7 @@
                      '<span>' + (S.rb + 1) + '</span>';
       host.appendChild(lk);
     }
+    fitForges();
     paintForges();
   }
 
@@ -2228,7 +2255,9 @@
         });
       } catch (e) {}
     }
-    addEventListener('resize', () => { topH = 0; fitTop(); fitPlot(); drawTut(); palArrows(); });
+    addEventListener('resize', () => {
+      topH = 0; fitTop(); fitPlot(); fitForges(); drawTut(); palArrows();
+    });
     $('pal').addEventListener('scroll', palArrows, { passive: true });
     setInterval(save, 15000);
   }
