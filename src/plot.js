@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p52';
+  const VER = 'p53';
 
   const P = {};
   window.PLOT = P;
@@ -73,12 +73,37 @@
   };
   /* Outside YouTube the reward is granted locally, so every ad-gated path stays
      playable and testable in development. */
+  /* ONE AT A TIME, AND NEVER FOREVER.
+
+     Two failures to guard against. A double tap fired two requests, and two
+     rewards for one ad is an exploit as well as a bug. And a request that never
+     settles runs neither callback, so the player is left looking at a button
+     that visibly did nothing - the worst kind of dead tap, because there is not
+     even a message saying why.
+
+     The clock is deliberately generous: the promise settles when the ad
+     FINISHES, so a short one would cancel real views and deny the reward to
+     somebody who actually sat through it. At a minute, it is only ever an
+     escape from a stuck request. */
+  const AD_TIMEOUT = 60000;
+  let adInFlight = false;
+
   YT.rewarded = (ok, no) => {
     if (!YT.present) { ok && ok(); return; }
+    if (adInFlight) { no && no(); return; }
+    adInFlight = true;
+    let settled = false;
+    const settle = fn => {
+      if (settled) return;
+      settled = true; adInFlight = false;
+      fn && fn();
+    };
+    const clock = setTimeout(() => settle(no), AD_TIMEOUT);
+    const end = fn => () => { clearTimeout(clock); settle(fn); };
     try {
       window.ytgame.ads.requestRewardedAd('reward').then(
-        got => (got === false ? (no && no()) : (ok && ok())), () => no && no());
-    } catch (e) { no && no(); }
+        got => end(got === false ? no : ok)(), end(no));
+    } catch (e) { end(no)(); }
   };
   YT.interstitial = done => {
     if (!YT.present) { done && done(); return; }
