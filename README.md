@@ -67,6 +67,22 @@ the whole game stays playable and testable offline.
 `?reset=1` wipes the save. It is **gated to localhost** so it cannot be
 stumbled into on the public build.
 
+### Testing against YouTube's CSP
+
+`serve.js` sends the exact `Content-Security-Policy` YouTube applies to
+Playables, taken verbatim from the [SDK Test Suite guide][csp]. Loading the game
+locally therefore runs it under the real policy, and a violation shows in the
+console instead of surfacing at certification.
+
+Worth knowing what the sandbox directive leaves out: `allow-modals`,
+`allow-popups` and `allow-downloads` are all absent, so `alert()`, `confirm()`,
+`window.open()` and `<a download>` do nothing inside a Playable. This game uses
+none of them.
+
+Current status: **no violations.**
+
+[csp]: https://developers.google.com/youtube/gaming/playables/reference/test_suite_guide
+
 ## Balance
 
 `assets/craft.json` is generated, never hand-edited. Recipes, prices, unlock
