@@ -180,7 +180,7 @@
      AudioContext cannot exist before one and 80 KB has no business in the path
      to first frame. Every event keeps its synthesised version as a fallback, so
      one failed decode costs one sound and not all of them. */
-  const CLIPS = ['lift', 'place', 'buy', 'coin1', 'coin2', 'coin3', 'craft',
+  const CLIPS = ['lift', 'place', 'buy', 'coin1', 'coin2', 'craft',
                  'merge', 'find', 'sparkle', 'rb', 'nope'];
   const buf = {};
   let loading = false;
@@ -221,10 +221,11 @@
                      voice({ f: 220, to: 150, dur: 0.09, gain: 0.05 }); }),
     buy:   () => play('buy', 0.5, 1.12,
              () => seq([784, 1175], 55, { dur: 0.1, gain: 0.05, type: 'square' })),
-    /* Money, not a chime. Three chip variants picked at random and pitched
-       +/-7%, because tapping is the single most repeated action in the game and
-       one sample forty times a minute becomes a drill. */
-    coin:  () => play('coin' + (1 + Math.floor(Math.random() * 3)),
+    /* Coins, not casino chips. The chip clink was plastic - it read as putting
+       a counter down, not as being paid. Two real coin jingles, picked at random
+       and pitched +/-7%, because tapping is the most repeated action in the game
+       and one sample forty times a minute becomes a drill. */
+    coin:  () => play('coin' + (1 + Math.floor(Math.random() * 2)),
              0.55, 0.94 + Math.random() * 0.14,
              () => seq([1047, 1568], 48, { dur: 0.13, gain: 0.055 })),
     craft: () => play('craft', 0.6, 0.9,
@@ -1833,12 +1834,35 @@
   }
 
   /* ---------------- boot ---------------- */
+  /* The bar tracks real milestones rather than a timer, so it cannot sit at 90%
+     while something is genuinely stuck. */
+  function bootAt(pct, label) {
+    const f = $('bootFill'), t = $('bootTip');
+    if (f) f.style.width = pct + '%';
+    if (t && label) t.textContent = label;
+  }
+
+  function bootDone() {
+    const b = $('boot');
+    if (!b) return;
+    bootAt(100, 'READY');
+    b.classList.add('gone');
+    setTimeout(() => b.remove(), 500);
+  }
+
   P.boot = function () {
     YT.init();
+    /* firstFrameReady means "frames are on screen", and the loading screen IS a
+       frame - it is in the markup and has already painted. Calling it after the
+       data loaded described the game as visible some time after it was. */
+    YT.firstFrame();
+    bootAt(15, 'LOADING');
 
-    /* ?reset=1 wipes the save and starts over. Local development only - it is
-       one of the debug params that must be stripped before submission. */
-    if (/[?&]reset=1/.test(location.search)) {
+    /* ?reset=1 wipes the save. GATED TO LOCALHOST rather than removed: it stays
+       useful while developing and cannot be stumbled into on the public build,
+       where a stray link would silently destroy someone's progress. */
+    const dev = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    if (dev && /[?&]reset=1/.test(location.search)) {
       try { localStorage.removeItem(KEY); } catch (e) {}
       if (YT.present) { try { window.ytgame.game.saveData('{}'); } catch (e) {} }
     }
@@ -1846,6 +1870,7 @@
     fetch('assets/craft.json')
       .then(r => r.json())
       .then(d => {
+        bootAt(55, 'RECIPES');
         D = d;
         B = d.balance;
         ING = d.ingredients.slice();
@@ -1863,6 +1888,7 @@
         });
         return initSave();
       })
+      .then(v => { bootAt(80, 'SAVE'); return v; })
       .then(() => {
         initAudio();                   // after the probe: it keys off YT.present
         if (!S.unlocked) {
@@ -1879,14 +1905,15 @@
         bankOffline();
         drawAll();
         bind();
-        YT.firstFrame();
-        YT.ready();
+        bootDone();
+        YT.ready();                    // interactive, not merely visible
         requestAnimationFrame(tick);
       })
       .catch(err => {
-        document.body.innerHTML =
-          '<div style="padding:24px;font:16px sans-serif;color:#4b2a14">' +
-          'Could not load the recipe data: ' + err.message + '</div>';
+        // fail visibly on the loading screen rather than replacing the page
+        bootAt(100, 'COULD NOT LOAD');
+        const t = $('bootTip');
+        if (t) t.textContent = 'COULD NOT LOAD - ' + (err && err.message || 'error');
       });
   };
 
