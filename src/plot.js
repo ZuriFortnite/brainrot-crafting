@@ -387,7 +387,7 @@
     // ONE gate, shared with the button's enabled state - they drifted apart
     // once the ad path existed, so the button lit up and the action refused
     if (!canRebirth()) {
-      toast(n ? 'NOT READY YET' : 'ALREADY AT MAX'); SFX.nope(); return;
+      refuse($('rbGo'), n ? 'NOT READY YET' : 'ALREADY AT MAX'); return;
     }
     if (S.coins < n.need) S.adRb = 0;      // the ads were spent on this one
     S.rb++;
@@ -518,10 +518,10 @@
 
   function upMaxed(k) { return upLvl(k) >= upDef(k).max; }
 
-  function buyUp(k) {
+  function buyUp(k, el) {
     if (upMaxed(k)) return;
     const c = upCost(k);
-    if (S.coins < c) { toast('NOT ENOUGH COINS'); SFX.nope(); return; }
+    if (S.coins < c) { refuse(el, 'NOT ENOUGH COINS'); return; }
     S.coins -= c;
     S.up[k] = upLvl(k) + 1;
     SFX.buy();
@@ -856,10 +856,10 @@
   function useIngredient(id, card) {
     const it = D.items[id];
     if (it.tier > ingMax()) {
-      toast('NEEDS REBIRTH ' + bandOfTier(it.tier)); SFX.nope(); return;
+      refuse(card, 'NEEDS REBIRTH ' + bandOfTier(it.tier)); return;
     }
     const u = usable();
-    if (u && !u.has(id)) { toast(it.name + ' WONT PAIR WITH THAT'); SFX.nope(); return; }
+    if (u && !u.has(id)) { refuse(card, it.name + ' WONT PAIR WITH THAT'); return; }
 
     /* Short of coins is a dead end otherwise: the recipe is right there, lit
        up, and you cannot touch it. An ad buys this one ingredient outright,
@@ -1339,6 +1339,18 @@
     }, 240);
   }
 
+  /* Say no AT the thing that was tapped, not only in a toast forty percent of
+     the way up the screen. */
+  function refuse(el, text) {
+    toast(text);
+    SFX.nope();
+    if (!el) return;
+    el.classList.remove('refuse');
+    void el.offsetWidth;                 // restart the animation
+    el.classList.add('refuse');
+    setTimeout(() => el.classList.remove('refuse'), 340);
+  }
+
   function toast(text) {
     const el = $('toast');
     el.textContent = text;
@@ -1618,12 +1630,13 @@
     const t = ev.target;
     if (!t.closest) return;
 
-    if (t.closest('#lockSlot') || t.closest('#buySlot')) { buySlot(); return; }
+    const sl = t.closest('#lockSlot') || t.closest('#buySlot');
+    if (sl) { buySlot(sl); return; }
 
     const tk = t.closest('[data-task]');
     if (tk) { claimTask(tk.dataset.task); return; }
     const up = t.closest('[data-up]');
-    if (up) { buyUp(up.dataset.up); return; }
+    if (up) { buyUp(up.dataset.up, up); return; }
 
     if (t.closest('#palUp')) { palJump(-1); return; }
     if (t.closest('#palDown')) { palJump(1); return; }
@@ -1647,9 +1660,9 @@
     }
   }
 
-  function buySlot() {
+  function buySlot(el) {
     const c = slotCost();
-    if (S.coins < c) { toast('NOT ENOUGH COINS'); SFX.nope(); return; }
+    if (S.coins < c) { refuse(el || $('buySlot'), 'NOT ENOUGH COINS'); return; }
     S.coins -= c;
     S.unlocked++;
     SFX.craft();
