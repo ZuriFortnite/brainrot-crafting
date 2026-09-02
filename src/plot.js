@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p50';
+  const VER = 'p51';
 
   const P = {};
   window.PLOT = P;
@@ -890,6 +890,71 @@
     save();
   }
 
+  /* ---------------- selling ----------------
+     Priced from what a thing COST, never from what it earns. Paying out a
+     minute of income would be an infinite loop - a Ninja Cup costs 24, makes
+     0.6/s and crafts in a second, so ninety seconds of income would mint money
+     forever. Two fifths of the build cost is always a loss, which makes selling
+     a cleanup tool rather than a strategy. */
+  function recipeCost(id) {
+    let c = 0;
+    for (const p of D.madeBy[id] || []) c += priceOf(p[0]) * p[1];
+    return c;
+  }
+
+  function sellValue(e) {
+    // a level N took 2^(N-1) crafts to build; a mutant took two creatures
+    const id = e.k === 'mut' ? e.art : e.id;
+    const base = recipeCost(id) * (e.k === 'mut' ? 2 : 1);
+    return Math.max(1, Math.round(base * Math.pow(2, (e.lvl || 1) - 1) * 0.4));
+  }
+
+  /* Gold, mutated or levelled means hours of play, so those ask first. A plain
+     level one does not - making every sale modal would just train people to
+     dismiss the dialog. */
+  function sellPrecious(e) {
+    return !!(e.gold || e.ev || (e.lvl || 1) > 2);
+  }
+
+  let sellAt = -1;
+
+  function doSell(i) {
+    const e = S.slots[i];
+    if (!e) return;
+    const v = sellValue(e);
+    S.coins += v;
+    S.slots[i] = null;
+    delete cool[i];
+    sellArmed = false;
+    armTrash(false);
+    SFX.coin();
+    drawPlot(); paint(); save();
+    const el = $('slots').children[i];
+    if (el) popAt(el, '+' + fmt(v));
+    toast('SOLD FOR ' + fmt(v));
+  }
+
+  function askSell(i) {
+    const e = S.slots[i];
+    if (!e) return;
+    if (!sellPrecious(e)) { doSell(i); return; }
+    sellAt = i;
+    $('sellArt').src = artOf(e);
+    $('sellAmt').textContent = '+' + fmt(sellValue(e));
+    $('sellWarn').textContent = (e.ev ? 'This one is mutated. ' : '') +
+      (e.gold ? 'This one is golden. ' : '') +
+      ((e.lvl || 1) > 1 ? 'Level ' + e.lvl + '. ' : '') + 'This cannot be undone.';
+    $('sell').classList.add('on');
+    drawTut();
+  }
+
+  function armTrash(on) {
+    const t = $('trash');
+    if (!t) return;
+    t.classList.toggle('armed', !!on);
+    $('trashV').textContent = on ? 'TAP ONE' : 'SELL';
+  }
+
   /* ---------------- the crafting table ---------------- */
   function drawGrid() {
     const host = $('g3');
@@ -1736,7 +1801,8 @@
   function tutBlocked() {
     return $('reveal').classList.contains('on') ||
            $('dex').classList.contains('on') || $('rb').classList.contains('on') ||
-           $('away').classList.contains('on') || $('shop').classList.contains('on');
+           $('away').classList.contains('on') || $('shop').classList.contains('on') ||
+           $('sell').classList.contains('on');
   }
 
   function tick(t) {
@@ -1756,7 +1822,7 @@
      everything. `.mob` sets touch-action:none so the browser hands us the
      gesture; the grass around it keeps pan-y, so the plot still scrolls. */
   const SLOP = 9;
-  let press = null, dragging = null;
+  let press = null, dragging = null, sellArmed = false;
 
   function onDown(ev) {
     loadClips();                       // needs a gesture; this is the earliest
@@ -1800,14 +1866,17 @@
     layer.style.transform = 'translate(' + (x - dragging.w / 2) + 'px,' +
                             (y - dragging.h * 0.62) + 'px)';
     const under = document.elementFromPoint(x, y);
+    const bin = under && under.closest ? under.closest('#trash') : null;
     const slot = under && under.closest ? under.closest('.slot') : null;
-    const idx = slot && slot.dataset.slot !== undefined ? +slot.dataset.slot : -1;
+    const idx = bin ? -2
+      : (slot && slot.dataset.slot !== undefined ? +slot.dataset.slot : -1);
     if (idx === dragging.target) return;
     for (const s of $('slots').children) s.classList.remove('drop', 'dropMerge');
     dragging.target = idx;
-    if (idx >= 0 && idx !== dragging.slot) {
-      slot.classList.add(S.slots[idx] ? 'dropMerge' : 'drop');
-    }
+    $('trash').classList.toggle('over', idx === -2);
+    // show what it is worth BEFORE letting go, not after
+    $('trashV').textContent = idx === -2
+      ? '+' + fmt(sellValue(S.slots[dragging.slot])) : 'SELL';
   }
 
   function onMove(ev) {
@@ -1828,7 +1897,10 @@
     for (const s of $('slots').children) s.classList.remove('drop', 'dropMerge');
     const d = dragging;
     dragging = null;
+    $('trash').classList.remove('over');
+    $('trashV').textContent = 'SELL';
     if (!ok || !d) { drawPlot(); return; }
+    if (d.target === -2) { askSell(d.slot); return; }
     const to = d.target;
     if (to < 0 || to === d.slot) { drawPlot(); return; }
     if (S.slots[to]) { merge(d.slot, to); return; }
@@ -1845,6 +1917,7 @@
     const p = press;
     press = null;
     if (dragging) { endDrag(true); return; }
+    if (sellArmed) { askSell(p.slot); return; }
     collect(p.slot, p.el);
   }
 
@@ -1857,6 +1930,18 @@
     const t = ev.target;
     if (!t.closest) return;
 
+    if (t.closest('#trash')) {
+      sellArmed = !sellArmed;
+      armTrash(sellArmed);
+      if (sellArmed) toast('TAP A BRAINROT TO SELL IT');
+      return;
+    }
+    if (t.closest('#sellGo')) {
+      $('sell').classList.remove('on');
+      if (sellAt >= 0) doSell(sellAt);
+      sellAt = -1;
+      return;
+    }
     const sl = t.closest('#lockSlot') || t.closest('#buySlot');
     if (sl) { buySlot(sl); return; }
 
@@ -2055,6 +2140,7 @@
       }, () => toast('NO AD AVAILABLE'));
     };
 
+    armTrash(false);
     $('navPlot').onclick = () => view('plot');
     $('navCraft').onclick = () => view('craft');
     $('navRb').onclick = () => { drawRb(); $('rb').classList.add('on'); drawTut(); };
@@ -2064,6 +2150,7 @@
       b.onclick = () => {
         $('dex').classList.remove('on'); $('rb').classList.remove('on');
         $('away').classList.remove('on'); $('shop').classList.remove('on');
+        $('sell').classList.remove('on'); sellAt = -1;
         drawTut();
       };
     }

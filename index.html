@@ -253,6 +253,36 @@
   #buySlot:active{transform:translateY(5px);box-shadow:0 1px 0 var(--line)}
   #buySlot img{width:26px;height:26px}
   #buySlot.dim{filter:grayscale(.65) brightness(.92)}
+
+  /* The bin. Two idioms because the plot already has two: drag onto it like you
+     drag one creature onto another, or tap it and then tap what you want gone. */
+  #trash{display:flex;align-items:center;gap:7px;font-size:15px;color:#fff;
+    background:linear-gradient(180deg,#e08a8a,#c04a4a);
+    border:var(--lineW) solid var(--line);border-radius:16px;
+    padding:9px 14px;box-shadow:0 6px 0 var(--line);cursor:pointer;
+    transition:transform .07s,box-shadow .07s,filter .12s}
+  #trash:active{transform:translateY(5px);box-shadow:0 1px 0 var(--line)}
+  @media (hover:hover){#trash:hover{filter:brightness(1.08)}}
+  #trash img{width:26px;height:26px;object-fit:contain}
+  #trash.armed{background:linear-gradient(180deg,#ffe07a,#e0a017);color:#3a2408;
+    animation:hotcard 1s ease-in-out infinite}
+  #trash.over{background:linear-gradient(180deg,#ff9a9a,#e02a2a);
+    transform:scale(1.12)}
+  #trashV{-webkit-text-stroke:0}
+
+  /* selling something that took real time to build asks first */
+  #sellBody{text-align:center}
+  #sellBody img{width:min(38vw,150px);height:min(38vw,150px);object-fit:contain;
+    filter:drop-shadow(0 8px 7px rgba(75,42,20,.35))}
+  #sellBody .amt{font-size:32px;color:#ffdc5e;margin-top:6px;
+    -webkit-text-stroke:9px var(--line);paint-order:stroke fill}
+  #sellBody .warn{font-size:14px;color:#8a5d3c;margin-top:8px}
+  #sellGo{margin-top:16px;display:inline-flex;align-items:center;gap:9px;
+    font-size:19px;color:#fff;background:linear-gradient(180deg,#e08a8a,#c04a4a);
+    border:var(--lineW) solid var(--line);border-radius:18px;padding:10px 24px;
+    box-shadow:0 7px 0 var(--line);cursor:pointer}
+  #sellGo:active{transform:translateY(6px);box-shadow:0 1px 0 var(--line)}
+  #sellGo img{width:24px;height:24px}
   @media (hover:hover){#buySlot:not(.dim):hover{filter:brightness(1.08)}}
 
   /* ---------------- the crafting table ---------------- */
@@ -745,6 +775,9 @@
       <div class="adSq green"><img class="ic" src="assets/icon/cash.png" alt="">
         <span class="tvb"><img src="assets/icon/clapboard.png" alt=""></span></div>
       <span class="cap">2x FOR 3 MIN</span></div>
+    <div id="trash" title="Sell a brainrot">
+      <img src="assets/icon/trash.png" alt="">
+      <span id="trashV"></span></div>
     <div class="adCol" id="slotAd">
       <div class="adSq blue"><img class="ic" src="assets/icon/plus.png" alt="">
         <span class="tvb"><img src="assets/icon/clapboard.png" alt=""></span></div>
@@ -801,6 +834,20 @@
   <div class="panel">
     <h2>COLLECTION</h2>
     <div class="body"><div id="dexGrid"></div></div>
+    <div class="foot"><button class="btn orange close" aria-label="Close">
+      <img src="assets/icon/close.png" alt="" draggable="false"></button></div>
+  </div>
+</div>
+
+<div id="sell" class="sheet">
+  <div class="panel">
+    <h2>SELL THIS?</h2>
+    <div class="body"><div id="sellBody">
+      <img id="sellArt" src="" alt="">
+      <div class="amt" id="sellAmt"></div>
+      <div class="warn" id="sellWarn"></div>
+      <div id="sellGo"><img src="assets/icon/trash.png" alt=""><span>SELL</span></div>
+    </div></div>
     <div class="foot"><button class="btn orange close" aria-label="Close">
       <img src="assets/icon/close.png" alt="" draggable="false"></button></div>
   </div>
@@ -865,7 +912,7 @@
   </div>
 </div>
 
-<script src="src/plot.js?v=p50"></script>
+<script src="src/plot.js?v=p51"></script>
 <script>PLOT.boot();</script>
 </body>
 </html>
