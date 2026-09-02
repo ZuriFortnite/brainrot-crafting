@@ -353,6 +353,7 @@
     }
     if (typeof o.boost === 'number') dst.boost = o.boost;
     if (typeof o.adRb === 'number') dst.adRb = o.adRb | 0;
+    // slots carry ev/rare through adopt untouched - they are stored, not derived
     if (o.up && typeof o.up === 'object') dst.up = o.up;   // survives rebirth
     if (o.tl && typeof o.tl === 'object') dst.tl = o.tl;
     if (o.tp && typeof o.tp === 'object') dst.tp = o.tp;
@@ -521,19 +522,28 @@
   /* ---------------- timed events ----------------
      Read straight off the wall clock: no stored start time to drift, nothing to
      pause by closing the tab, and every player in the same event at once. */
+  /* PRISMATIC takes the slot once every twelve hours rather than joining the
+     rotation, so it stays rare enough to be worth catching. */
+  function evFor(slot) {
+    const E = D.events;
+    if (E.rare && E.rareEvery && slot % E.rareEvery === 0) return E.rare;
+    return E.list[slot % E.list.length];
+  }
+
   function evCycle() {
     const E = D.events;
     const now = Date.now() / 1000;
     const slot = Math.floor(now / E.period);
     const into = now - slot * E.period;
-    const def = E.list[slot % E.list.length];
-    if (into < E.window) return { on: true, def: def, left: E.window - into };
-    const nxt = E.list[(slot + 1) % E.list.length];
-    return { on: false, def: nxt, left: E.period - into };
+    if (into < E.window) {
+      return { on: true, def: evFor(slot), left: E.window - into };
+    }
+    return { on: false, def: evFor(slot + 1), left: E.period - into };
   }
 
   function evDef(k) {
     if (!k) return null;
+    if (D.events.rare && D.events.rare.k === k) return D.events.rare;
     for (const e of D.events.list) if (e.k === k) return e;
     return null;
   }
@@ -621,7 +631,8 @@
            (boostOn() ? B.boostMult : 1) *
            (1 + 0.15 * upLvl('idle')) *
            (e.gold ? B.goldMult : 1) *
-           (evDef(e.ev) ? evDef(e.ev).mult : 1);
+           (evDef(e.ev) ? evDef(e.ev).mult : 1) *
+           (e.rare ? D.events.rareMult : 1);
   }
 
   function tapMult() { return B.tapMult + 2 * upLvl('tap'); }
@@ -656,7 +667,8 @@
       hue: hueOf(seed % 9973, (seed * 7) % 9973),
       lvl: Math.max(x.lvl || 1, y.lvl || 1),
       gold: !!(x.gold || y.gold),
-      ev: x.ev || y.ev || null
+      ev: x.ev || y.ev || null,
+      rare: !!(x.rare || y.rare)
     };
   }
 
@@ -709,9 +721,11 @@
       if (e) {
         const m = document.createElement('div');
         m.className = 'mob' + (e.k === 'mut' ? ' mut' : '') +
-                      (e.gold ? ' gold' : '') + (e.ev ? ' ev' : '');
+                      (e.gold ? ' gold' : '') + (e.ev ? ' ev' : '') +
+                      (e.rare ? ' rare' : '');
         const badge = (e.lvl || 1) > 1 || e.k === 'mut' || e.gold || e.ev
-          ? '<span class="lv">' + (e.ev ? evDef(e.ev).name.split(' ')[0]
+          ? '<span class="lv">' + (e.ev ? (e.rare ? '\u2605 ' : '') +
+                evDef(e.ev).name.split(' ')[0]
               : e.k === 'mut' ? 'MUT'
               : e.gold && (e.lvl || 1) === 1 ? 'GOLD' : 'Lv' + e.lvl) + '</span>' : '';
         const ed = evDef(e.ev);
@@ -821,7 +835,8 @@
     const ec = evCycle();
     if (ec.on && !e.ev && Math.random() < D.events.tapChance) {
       e.ev = ec.def.k;
-      toast(ec.def.name + '  MUTATION!');
+      e.rare = Math.random() < D.events.rareChance;
+      toast((e.rare ? 'RARE ' : '') + ec.def.name + ' MUTATION!');
       SFX.find();
       drawPlot();
       save();
@@ -843,7 +858,7 @@
     let out;
     if (a.k === 'br' && b.k === 'br' && a.id === b.id && a.lvl === b.lvl) {
       out = { k: 'br', id: a.id, lvl: a.lvl + 1, gold: !!(a.gold || b.gold),
-              ev: a.ev || b.ev || null };
+              ev: a.ev || b.ev || null, rare: !!(a.rare || b.rare) };
       toast('LEVEL ' + out.lvl + (out.gold ? '  GOLD' : ''));
     } else {
       out = fuse(a, b);
@@ -1037,9 +1052,16 @@
     const gold = Math.random() < B.goldChance;
     // an event mutation is rolled at the moment of crafting and kept forever
     const c = evCycle();
-    const ev = (c.on && Math.random() < D.events.craftChance) ? c.def.k : null;
-    S.slots[at] = { k: 'br', id: id, lvl: 1, gold: gold, ev: ev };
-    if (ev) toast(c.def.name + '  MUTATION!');
+    const chance = c.on ? (c.def.chance || D.events.craftChance) : 0;
+    const ev = (c.on && Math.random() < chance) ? c.def.k : null;
+    // rarity is decided here and stored, never recomputed - a rare creature
+    // stays rare whatever the balance does later
+    const rare = !!ev && Math.random() < D.events.rareChance;
+    S.slots[at] = { k: 'br', id: id, lvl: 1, gold: gold, ev: ev, rare: rare };
+    if (ev) {
+      toast((rare ? 'RARE ' : '') + c.def.name + ' MUTATION!');
+      if (rare) setTimeout(() => SFX.rb(), 120);
+    }
     S.tp.craft = (S.tp.craft | 0) + 1;
     const fresh = !seen.has(id);
     if (fresh) { seen.add(id); YT.score(seen.size); }

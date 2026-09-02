@@ -1370,28 +1370,28 @@
    "mult": 12.0,
    "tables": 3,
    "ads": 20,
-   "need": 2630000000
+   "need": 169000000
   },
   {
    "ing": 8,
    "mult": 60.0,
    "tables": 4,
    "ads": 35,
-   "need": 338000000000
+   "need": 4040000000
   },
   {
    "ing": 9,
    "mult": 400.0,
    "tables": 6,
    "ads": 55,
-   "need": 10200000000000
+   "need": 77300000000
   },
   {
    "ing": 10,
    "mult": 3000.0,
    "tables": 8,
    "ads": 80,
-   "need": 766000000000000
+   "need": 24900000000000
   }
  ],
  "start": {
@@ -1419,6 +1419,23 @@
   "window": 1200,
   "craftChance": 0.35,
   "tapChance": 0.02,
+  "rareChance": 0.125,
+  "rareMult": 3.0,
+  "rareEvery": 12,
+  "rare": {
+   "k": "prism",
+   "name": "PRISMATIC",
+   "mult": 10.0,
+   "chance": 0.6,
+   "sky": [
+    "#ffe9ff",
+    "#e9b6ff",
+    "#a86ce0"
+   ],
+   "grass": "#b878e8",
+   "ink": "#3d1258",
+   "tint": "saturate(2.8) hue-rotate(288deg) brightness(1.2) contrast(1.15)"
+  },
   "list": [
    {
     "k": "gold",
