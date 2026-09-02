@@ -34,7 +34,7 @@
      cache-busts this script, but craft.json did not - so a balance change could
      ship while every returning player kept the old numbers from cache, which is
      exactly what happened the first time the curve was retuned. */
-  const VER = 'p51';
+  const VER = 'p52';
 
   const P = {};
   window.PLOT = P;
@@ -335,7 +335,7 @@
      is never touched; outside it, the reverse. saveData MUST NOT run before
      loadData resolves. */
   const KEY = 'brplot_v2';
-  let loaded = false, saveTimer = 0;
+  let loaded = false, saveTimer = 0, touched = false, cloudBlocked = false;
 
   function blank() {
     return { v: 2, coins: 0, ts: 0, slots: [], unlocked: 0, seen: [],
@@ -398,22 +398,55 @@
     try { return window.top !== window.self; } catch (e) { return true; }
   }
 
+  /* A REJECTED read is fine - it just means no save yet. A read that never
+     SETTLES is the dangerous one: the whole boot chain hangs off this promise,
+     so the player would sit on the loading screen forever with nothing to read
+     and nothing to tap. Nothing in the SDK promises the call ever comes back,
+     so it races a clock.
+
+     If the clock wins, the game starts on a fresh save but REFUSES TO WRITE to
+     the cloud, because writing an empty record over a real one would silently
+     erase somebody's progress - far worse than a slow load. A late answer is
+     still adopted, but only while the player has not actually played yet. */
+  const READ_TIMEOUT = 8000;
+
   function initSave() {
     S = blank();
     YT.present = YT.raw && inYouTube();
     if (!YT.present) { localRead(); loaded = true; return Promise.resolve(S); }
-    return window.ytgame.game.loadData().then(raw => {
-      if (raw) { try { adopt(S, JSON.parse(raw)); } catch (e) {} }
-      loaded = true; return S;
-    }, () => { loaded = true; return S; });
+
+    const read = window.ytgame.game.loadData()
+      .then(raw => ({ raw: raw }), () => ({ raw: null }));
+    let clock = 0;
+    const late = new Promise(res => { clock = setTimeout(res, READ_TIMEOUT); });
+
+    return Promise.race([read, late]).then(r => {
+      clearTimeout(clock);
+      if (!r) {                                   // the clock won
+        cloudBlocked = true;
+        read.then(r2 => {
+          if (r2.raw && !touched) {
+            try { adopt(S, JSON.parse(r2.raw)); drawAll(); } catch (e) {}
+          }
+          cloudBlocked = false;                   // safe to write again
+        });
+      } else if (r.raw) {
+        try { adopt(S, JSON.parse(r.raw)); } catch (e) {}
+      }
+      loaded = true;
+      return S;
+    });
   }
 
   function save() {
     if (!loaded) return;
+    touched = true;
     S.ts = Date.now();
     S.seen = [...seen];
     const json = JSON.stringify(S);
     if (YT.present) {
+      // a read that timed out must never be written over - see initSave
+      if (cloudBlocked) return;
       // coalesced: cert allows 64KiB a flush, but writing on every tap is waste
       clearTimeout(saveTimer);
       saveTimer = setTimeout(() => {
@@ -425,7 +458,7 @@
   }
 
   function flushSave() {
-    if (!loaded || !YT.present) return;
+    if (!loaded || !YT.present || cloudBlocked) return;
     clearTimeout(saveTimer);
     S.ts = Date.now(); S.seen = [...seen];
     try { window.ytgame.game.saveData(JSON.stringify(S)); } catch (e) {}
