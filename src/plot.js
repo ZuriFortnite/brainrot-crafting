@@ -180,8 +180,8 @@
      AudioContext cannot exist before one and 80 KB has no business in the path
      to first frame. Every event keeps its synthesised version as a fallback, so
      one failed decode costs one sound and not all of them. */
-  const CLIPS = ['lift', 'place', 'buy', 'coin', 'craft', 'merge', 'find',
-                 'sparkle', 'rb', 'nope'];
+  const CLIPS = ['lift', 'place', 'buy', 'coin1', 'coin2', 'coin3', 'craft',
+                 'merge', 'find', 'sparkle', 'rb', 'nope'];
   const buf = {};
   let loading = false;
 
@@ -221,9 +221,11 @@
                      voice({ f: 220, to: 150, dur: 0.09, gain: 0.05 }); }),
     buy:   () => play('buy', 0.5, 1.12,
              () => seq([784, 1175], 55, { dur: 0.1, gain: 0.05, type: 'square' })),
-    // the tap payout pitches up slightly each time so a fast tapper does not
-    // hear the same sample forty times
-    coin:  () => play('coin', 0.5, 0.96 + Math.random() * 0.14,
+    /* Money, not a chime. Three chip variants picked at random and pitched
+       +/-7%, because tapping is the single most repeated action in the game and
+       one sample forty times a minute becomes a drill. */
+    coin:  () => play('coin' + (1 + Math.floor(Math.random() * 3)),
+             0.55, 0.94 + Math.random() * 0.14,
              () => seq([1047, 1568], 48, { dur: 0.13, gain: 0.055 })),
     craft: () => play('craft', 0.6, 0.9,
              () => { hit(0.11, 3200, 700, 0.15, 4);
